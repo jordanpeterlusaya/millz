@@ -1,7 +1,9 @@
 (function (global) {
     var STORAGE_KEY = "millz.catalog.v5";
+    var CODES_KEY = "millz.codes.v1";
     var ADMIN_KEY = "millz.admin.ok";
     var CATALOG_URL = "/data/catalog.json";
+    var CODE_TTL_MS = 4 * 60 * 60 * 1000;
 
     var MILLZ_WA = "255683179360";
     var MILLZ_WA_DISPLAY = "0683179360";
@@ -157,6 +159,176 @@
         return (prefix || "item") + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
     }
 
+    function catalogItems(data) {
+        var list = ((data && data.games) || []).concat((data && data.apps) || []);
+        if (data && data.tips) list.push(data.tips);
+        return list;
+    }
+
+    function normalizeCode(raw) {
+        return String(raw || "").trim().toUpperCase().replace(/\s+/g, "");
+    }
+
+    function generateAccessCode(existing) {
+        var used = {};
+        (existing || []).forEach(function (entry) {
+            used[normalizeCode(entry && entry.code)] = true;
+        });
+        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        var i;
+        for (i = 0; i < 40; i++) {
+            var token = "MILLZ-";
+            var j;
+            for (j = 0; j < 6; j++) token += chars.charAt(Math.floor(Math.random() * chars.length));
+            if (!used[token]) return token;
+        }
+        return "MILLZ-" + Date.now().toString(36).toUpperCase().slice(-6);
+    }
+
+    function codeExpiry(entry) {
+        if (!entry) return 0;
+        if (entry.unlockedAt) return Number(entry.unlockedAt) + CODE_TTL_MS;
+        return Number(entry.createdAt || 0) + CODE_TTL_MS;
+    }
+
+    function readLocalCodes() {
+        try {
+            var data = JSON.parse(localStorage.getItem(CODES_KEY) || "null");
+            if (data && Array.isArray(data.codes)) return data.codes;
+            if (Array.isArray(data)) return data;
+        } catch (e) {
+            return [];
+        }
+        return [];
+    }
+
+    function writeLocalCodes(codes) {
+        localStorage.setItem(CODES_KEY, JSON.stringify({ codes: codes }));
+    }
+
+    function mergeCodes(seed, local) {
+        var map = {};
+        (seed || []).forEach(function (entry) {
+            if (entry && entry.id) map[entry.id] = entry;
+        });
+        (local || []).forEach(function (entry) {
+            if (entry && entry.id) map[entry.id] = entry;
+        });
+        return Object.keys(map).map(function (id) { return map[id]; }).sort(function (a, b) {
+            return (b.createdAt || 0) - (a.createdAt || 0);
+        });
+    }
+
+    function fetchSeedCodes() {
+        return fetch("/data/codes.json", { cache: "no-store" })
+            .then(function (res) { return res.ok ? res.json() : { codes: [] }; })
+            .catch(function () { return { codes: [] }; })
+            .then(function (data) { return Array.isArray(data.codes) ? data.codes : []; });
+    }
+
+    function loadCodes() {
+        return pingLocal().then(function (local) {
+            if (local) {
+                return fetch("/api/codes", { cache: "no-store", headers: adminHeaders() })
+                    .then(function (res) { return res.ok ? res.json() : { codes: [] }; })
+                    .then(function (data) { return Array.isArray(data.codes) ? data.codes : []; })
+                    .catch(function () { return fetchSeedCodes(); });
+            }
+            return fetchSeedCodes().then(function (seed) {
+                return mergeCodes(seed, readLocalCodes());
+            });
+        });
+    }
+
+    function applyRedeem(codes, code, catalog, persistLocal) {
+        var now = Date.now();
+        var entry = (codes || []).find(function (item) {
+            return normalizeCode(item.code) === code;
+        });
+        if (!entry) {
+            return { ok: false, error: "invalid", message: "Kodi si sahihi." };
+        }
+        if (now >= codeExpiry(entry)) {
+            return { ok: false, error: "expired", message: "Kodi ime-expire. Omba nyingine kwa admin." };
+        }
+        var game = catalogItems(catalog).find(function (item) { return item.id === entry.gameId; });
+        var link = game && game.link ? String(game.link).trim() : "";
+        if (!link) {
+            return { ok: false, error: "missing_link", message: "Hakuna download link kwa hii game. Admin aweke link kwanza." };
+        }
+        if (!entry.unlockedAt) {
+            entry.used = true;
+            entry.unlockedAt = now;
+            entry.expiresAt = now + CODE_TTL_MS;
+            if (persistLocal) writeLocalCodes(codes);
+        }
+        return {
+            ok: true,
+            link: link,
+            gameName: entry.gameName || (game && game.name) || "",
+            expiresAt: codeExpiry(entry)
+        };
+    }
+
+    function issueCode(gameId) {
+        return fetch("/api/codes", {
+            method: "POST",
+            headers: adminHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ gameId: gameId })
+        }).then(function (res) {
+            return res.json().then(function (data) {
+                if (res.ok && data && data.code) return data;
+                throw new Error("api");
+            });
+        }).catch(function () {
+            return loadCatalog().then(function (catalog) {
+                var game = catalogItems(catalog).find(function (item) { return item.id === gameId; });
+                if (!game) return { ok: false, error: "missing_game", message: "Game haijapatikana." };
+                return fetchSeedCodes().then(function (seed) {
+                    var codes = mergeCodes(seed, readLocalCodes());
+                    var now = Date.now();
+                    var entry = {
+                        id: uid("code"),
+                        code: generateAccessCode(codes),
+                        gameId: game.id,
+                        gameName: game.name,
+                        createdAt: now,
+                        expiresAt: now + CODE_TTL_MS,
+                        used: false,
+                        unlockedAt: null
+                    };
+                    codes.unshift(entry);
+                    writeLocalCodes(codes);
+                    return { ok: true, disk: false, code: entry.code, entry: entry };
+                });
+            });
+        });
+    }
+
+    function redeemCode(raw) {
+        var code = normalizeCode(raw);
+        if (!code) {
+            return Promise.resolve({ ok: false, error: "invalid", message: "Weka kodi uliyopewa na admin baada ya malipo." });
+        }
+        return fetch("/api/codes/redeem", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: code })
+        }).then(function (res) {
+            return res.json().then(function (data) {
+                if (data && (data.ok === true || data.error)) return data;
+                throw new Error("api");
+            });
+        }).catch(function () {
+            return loadCatalog().then(function (catalog) {
+                return fetchSeedCodes().then(function (seed) {
+                    var codes = mergeCodes(seed, readLocalCodes());
+                    return applyRedeem(codes, code, catalog, true);
+                });
+            });
+        });
+    }
+
     function isAdmin() {
         try {
             return sessionStorage.getItem(ADMIN_KEY) === "1";
@@ -225,6 +397,12 @@
         loginAdmin: loginAdmin,
         logoutAdmin: logoutAdmin,
         fileToCover: fileToCover,
-        toNumber: toNumber
+        toNumber: toNumber,
+        CODE_TTL_MS: CODE_TTL_MS,
+        loadCodes: loadCodes,
+        issueCode: issueCode,
+        redeemCode: redeemCode,
+        codeExpiry: codeExpiry,
+        normalizeCode: normalizeCode
     };
 })(window);

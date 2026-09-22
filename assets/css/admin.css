@@ -204,6 +204,15 @@
     border-color: rgba(255, 80, 80, .35);
 }
 
+.admin-code {
+    grid-template-columns: 1fr;
+}
+
+.admin-code strong {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+}
+
 .cover-preview {
     width: 120px;
     height: 160px;

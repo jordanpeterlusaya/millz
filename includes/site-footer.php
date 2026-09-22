@@ -70,7 +70,6 @@ $socials = millz_socials();
             <a id="buyWhatsApp" class="btn btn-primary" href="https://wa.me/255683179360" target="_blank" rel="noopener">
                 <img src="assets/img/social/whatsapp.svg" alt="" style="width:18px;height:18px;"> Continue on WhatsApp
             </a>
-            <a href="access.php" class="btn btn-outline">I already paid — get access</a>
         </div>
     </div>
 </div>

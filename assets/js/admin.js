@@ -16,11 +16,13 @@
         if (data) {
             catalog = data;
             renderList();
+            renderCodes();
             return;
         }
         MILLZ.loadCatalog().then(function (loaded) {
             catalog = loaded;
             renderList();
+            renderCodes();
         });
     }
 
@@ -91,6 +93,7 @@
                 (item.link ? '<a href="' + MILLZ.esc(item.link) + '" target="_blank" rel="noopener">Link</a>' : "<em>Hakuna link</em>") +
                 "</div>" +
                 '<div class="admin-item-actions">' +
+                '<button type="button" data-issue="' + MILLZ.esc(item.id) + '">Toa code</button>' +
                 '<button type="button" data-edit="' + MILLZ.esc(item.id) + '">Edit</button>' +
                 '<button type="button" class="danger" data-del="' + MILLZ.esc(item.id) + '">Delete</button>' +
                 "</div></article>";
@@ -98,8 +101,30 @@
     }
 
     document.getElementById("adminList").addEventListener("click", function (e) {
+        var issueId = e.target.getAttribute("data-issue");
         var editId = e.target.getAttribute("data-edit");
         var delId = e.target.getAttribute("data-del");
+        if (issueId) {
+            MILLZ.issueCode(issueId).then(function (info) {
+                var banner = document.getElementById("issuedCode");
+                if (!info || !info.code) {
+                    if (banner) {
+                        banner.hidden = false;
+                        banner.textContent = (info && info.message) || "Imeshindikana kutoa code.";
+                    }
+                    return;
+                }
+                if (banner) {
+                    banner.hidden = false;
+                    banner.textContent = "Code ya " + (info.entry && info.entry.gameName ? info.entry.gameName : "game") + ": " + info.code + " — tuma WhatsApp. Ina expire baada ya masaa 4.";
+                }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(info.code).catch(function () {});
+                }
+                renderCodes();
+            });
+            return;
+        }
         if (editId) fillForm(findItem(editId));
         if (delId && confirm("Futa hii game?")) {
             removeItem(delId);
@@ -110,6 +135,36 @@
             });
         }
     });
+
+    function formatWhen(ms) {
+        if (!ms) return "—";
+        var d = new Date(Number(ms));
+        if (!isFinite(d.getTime())) return "—";
+        return d.toLocaleString();
+    }
+
+    function renderCodes() {
+        var host = document.getElementById("codesList");
+        if (!host || !window.MILLZ) return;
+        MILLZ.loadCodes().then(function (codes) {
+            if (!codes || !codes.length) {
+                host.innerHTML = '<p class="admin-lead">Hakuna code bado. Bonyeza Toa code kwenye game baada ya mteja kulipa.</p>';
+                return;
+            }
+            var now = Date.now();
+            host.innerHTML = codes.map(function (entry) {
+                var expiry = MILLZ.codeExpiry(entry);
+                var expired = now >= expiry;
+                var used = !!entry.unlockedAt;
+                var status = expired ? "Expired" : (used ? "Used" : "Unused");
+                return '<article class="admin-item admin-code">' +
+                    "<div><strong>" + MILLZ.esc(entry.code) + "</strong>" +
+                    "<span>" + MILLZ.esc(entry.gameName || entry.gameId || "Game") + "</span>" +
+                    "<span>" + status + " · expire " + MILLZ.esc(formatWhen(expiry)) + "</span>" +
+                    "</div></article>";
+            }).join("");
+        });
+    }
 
     function findItem(id) {
         return allItems().find(function (item) { return item.id === id; }) || null;

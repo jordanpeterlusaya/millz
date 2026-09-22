@@ -295,7 +295,7 @@ $current = "home";
                 <?php foreach ($apps as $item): $kind = "app"; require "includes/product-card.php"; endforeach; ?>
             </div>
         <?php else: ?>
-            <div class="empty">Apps published in admin will appear here with Buy now and Get access.</div>
+            <div class="empty">Apps published in admin will appear here with Buy now.</div>
         <?php endif; ?>
     </div>
 </section>

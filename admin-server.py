@@ -14,6 +14,7 @@ from __future__ import annotations
 import base64
 import json
 import re
+import secrets
 import socket
 import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -22,9 +23,11 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parent
 CATALOG = ROOT / "data" / "catalog.json"
+CODES = ROOT / "data" / "codes.json"
 COVERS = ROOT / "assets" / "img" / "games"
 ADMIN_CODE = "MILLZ005"
 PREFERRED_PORT = 8765
+CODE_TTL_MS = 4 * 60 * 60 * 1000
 
 
 def is_local(handler: SimpleHTTPRequestHandler) -> bool:
@@ -80,6 +83,9 @@ class Handler(SimpleHTTPRequestHandler):
                 },
             )
             return
+        if path == "/api/codes":
+            self.list_codes()
+            return
         super().do_GET()
 
     def do_POST(self) -> None:
@@ -90,7 +96,88 @@ class Handler(SimpleHTTPRequestHandler):
         if path == "/api/cover":
             self.save_cover()
             return
+        if path == "/api/codes":
+            self.issue_code()
+            return
+        if path == "/api/codes/redeem":
+            self.redeem_code()
+            return
         self.send_error(404, "Not found")
+
+    def list_codes(self) -> None:
+        if not check_admin(self):
+            send_json(self, {"ok": False, "error": "Admin code si sahihi au si localhost."}, 403)
+            return
+        send_json(self, {"ok": True, "codes": load_codes()})
+
+    def issue_code(self) -> None:
+        if not check_admin(self):
+            send_json(self, {"ok": False, "error": "Admin code si sahihi au si localhost."}, 403)
+            return
+        try:
+            payload = json.loads(read_body(self).decode("utf-8") or "{}")
+        except Exception:
+            send_json(self, {"ok": False, "error": "JSON si sahihi."}, 400)
+            return
+        game_id = str(payload.get("gameId") or "").strip()
+        game = next((item for item in catalog_items() if str(item.get("id") or "") == game_id), None)
+        if not game:
+            send_json(self, {"ok": False, "error": "missing_game", "message": "Game haijapatikana."}, 404)
+            return
+        codes = load_codes()
+        created = now_ms()
+        entry = {
+            "id": "code-%s-%s" % (created, game_id[:8]),
+            "code": make_code(codes),
+            "gameId": game_id,
+            "gameName": game.get("name") or "Game",
+            "createdAt": created,
+            "expiresAt": created + CODE_TTL_MS,
+            "used": False,
+            "unlockedAt": None,
+        }
+        codes.insert(0, entry)
+        save_codes(codes)
+        send_json(self, {"ok": True, "disk": True, "code": entry["code"], "entry": entry})
+
+    def redeem_code(self) -> None:
+        try:
+            payload = json.loads(read_body(self).decode("utf-8") or "{}")
+        except Exception:
+            send_json(self, {"ok": False, "error": "JSON si sahihi."}, 400)
+            return
+        code = normalize_code(str(payload.get("code") or ""))
+        if not code:
+            send_json(self, {"ok": False, "error": "invalid", "message": "Weka kodi uliyopewa na admin baada ya malipo."}, 400)
+            return
+        codes = load_codes()
+        entry = next((item for item in codes if normalize_code(str(item.get("code") or "")) == code), None)
+        if not entry:
+            send_json(self, {"ok": False, "error": "invalid", "message": "Kodi si sahihi."}, 404)
+            return
+        stamp = now_ms()
+        if stamp >= code_expiry(entry):
+            send_json(self, {"ok": False, "error": "expired", "message": "Kodi ime-expire. Omba nyingine kwa admin."}, 410)
+            return
+        game = next((item for item in catalog_items() if str(item.get("id") or "") == str(entry.get("gameId") or "")), None)
+        link = str((game or {}).get("link") or "").strip()
+        if not link:
+            send_json(self, {"ok": False, "error": "missing_link", "message": "Hakuna download link kwa hii game. Admin aweke link kwanza."}, 409)
+            return
+        if not entry.get("unlockedAt"):
+            entry["used"] = True
+            entry["unlockedAt"] = stamp
+            entry["expiresAt"] = stamp + CODE_TTL_MS
+            save_codes(codes)
+        send_json(
+            self,
+            {
+                "ok": True,
+                "link": link,
+                "gameName": entry.get("gameName") or (game or {}).get("name") or "",
+                "expiresAt": code_expiry(entry),
+            },
+        )
 
     def save_catalog(self) -> None:
         if not check_admin(self):
@@ -133,6 +220,62 @@ class Handler(SimpleHTTPRequestHandler):
         send_json(self, {"ok": True, "url": "/assets/img/games/" + filename})
 
 
+def now_ms() -> int:
+    return int(time.time() * 1000)
+
+
+def read_json_file(path: Path, fallback: dict) -> dict:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else fallback
+    except Exception:
+        return fallback
+
+
+def write_json_file(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def catalog_items() -> list:
+    data = read_json_file(CATALOG, {"games": []})
+    items = list(data.get("games") or []) + list(data.get("apps") or [])
+    if data.get("tips"):
+        items.append(data["tips"])
+    return items
+
+
+def load_codes() -> list:
+    data = read_json_file(CODES, {"codes": []})
+    codes = data.get("codes")
+    return codes if isinstance(codes, list) else []
+
+
+def save_codes(codes: list) -> None:
+    write_json_file(CODES, {"codes": codes})
+
+
+def code_expiry(entry: dict) -> int:
+    unlocked = entry.get("unlockedAt")
+    if unlocked:
+        return int(unlocked) + CODE_TTL_MS
+    return int(entry.get("createdAt") or 0) + CODE_TTL_MS
+
+
+def normalize_code(raw: str) -> str:
+    return re.sub(r"\s+", "", str(raw or "")).upper()
+
+
+def make_code(existing: list) -> str:
+    used = {normalize_code(str(item.get("code") or "")) for item in existing}
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    for _ in range(40):
+        token = "MILLZ-" + "".join(secrets.choice(alphabet) for _ in range(6))
+        if token not in used:
+            return token
+    return "MILLZ-" + str(now_ms())[-6:]
+
+
 def pick_port(start: int) -> int:
     for port in range(start, start + 12):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -152,7 +295,7 @@ def main() -> None:
     print("MILLZ GAMES — local admin (bila database)", flush=True)
     print("Store:  http://127.0.0.1:%s/" % port, flush=True)
     print("Admin:  http://127.0.0.1:%s/admin.html" % port, flush=True)
-    print("Saves:  data/catalog.json  +  assets/img/games/", flush=True)
+    print("Saves:  data/catalog.json  +  data/codes.json  +  assets/img/games/", flush=True)
     print("Ctrl+C kusimamisha.", flush=True)
     print("", flush=True)
     try:

@@ -333,10 +333,23 @@ if (unlockForm) {
             showUnlock("Weka kodi uliyopewa na admin baada ya malipo.", "");
             return;
         }
-        const msg = "Hujambo MILLZ GAMES\nNimeshalipa HaloPesa 0627041240.\nAccess code: " + raw + "\nTafadhali thibitisha na unipe download.";
-        showUnlock("Tuma kodi kwenye WhatsApp 0683179360 ili admin athibitishe na akupe download.", "https://wa.me/255683179360?text=" + encodeURIComponent(msg));
-        const link = document.getElementById("unlockDownload");
-        if (link) link.textContent = "Send code on WhatsApp";
+        const popup = window.open("about:blank", "_blank");
+        MILLZ.redeemCode(raw).then(function (result) {
+            if (result && result.ok && result.link) {
+                showUnlock("Download ya " + (result.gameName || "game") + " ina funguka. Code ina expire baada ya masaa 4 tangu unlock.", result.link);
+                const link = document.getElementById("unlockDownload");
+                if (link) link.textContent = "Download";
+                if (popup) popup.location = result.link;
+                else window.open(result.link, "_blank", "noopener");
+                return;
+            }
+            if (popup) popup.close();
+            const message = (result && result.message) || "Kodi si sahihi.";
+            showUnlock(message, "");
+        }).catch(function () {
+            if (popup) popup.close();
+            showUnlock("Imeshindikana kufungua download. Jaribu tena.", "");
+        });
     });
 }
 

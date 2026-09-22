@@ -119,7 +119,6 @@ $tipsBuy = millz_buy_url("eFootball Tips Pack", null, "tip");
                 data-kind="tip"
                 data-wa="<?= htmlspecialchars($tipsBuy, ENT_QUOTES) ?>"
             >Buy on WhatsApp</button>
-            <a class="btn btn-outline" href="access.php">Get access</a>
         </div>
     </div>
 </main>

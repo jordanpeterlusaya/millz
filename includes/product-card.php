@@ -33,7 +33,7 @@ $priceLabel = millz_price($price);
         <div class="meta"><i class="fa-solid fa-layer-group"></i> <?= htmlspecialchars($category) ?></div>
         <div class="meta"><i class="fa-solid fa-desktop"></i> <?= htmlspecialchars($platform) ?></div>
         <div class="price"><?= htmlspecialchars($priceLabel) ?></div>
-        <div class="product-actions">
+        <div class="product-actions single">
             <button
                 type="button"
                 class="product-btn buy"
@@ -44,7 +44,6 @@ $priceLabel = millz_price($price);
                 data-kind="<?= htmlspecialchars($kind, ENT_QUOTES) ?>"
                 data-wa="<?= htmlspecialchars($buyUrl, ENT_QUOTES) ?>"
             >Buy now</button>
-            <a href="access.php" class="product-btn">Get access</a>
         </div>
     </div>
 </article>
