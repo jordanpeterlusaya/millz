@@ -35,6 +35,7 @@ $headerSocials = array_filter($socials, function ($s) {
             <li><a href="efootball-tips.php" class="<?= $current === 'tips' ? 'active' : '' ?>">eFootball</a></li>
             <li><a href="contact.php" class="<?= $current === 'contact' ? 'active' : '' ?>">Contact</a></li>
             <li><a href="access.php" class="<?= $current === 'access' ? 'active' : '' ?>">Access</a></li>
+            <li><a href="/admin.html">Admin</a></li>
         </ul>
 
         <div class="nav-actions">
