@@ -69,7 +69,7 @@ $current = "contact";
 
             <div class="info">
                 <strong>WhatsApp</strong>
-                <span>+255 683 179 360</span><br>
+                <span>0683179360</span><br>
                 <a class="btn btn-primary" href="https://wa.me/255683179360" target="_blank" rel="noopener" style="margin-top:10px;">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
                 </a>

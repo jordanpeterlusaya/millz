@@ -681,6 +681,10 @@ section {
     border-color: var(--lime);
 }
 
+.catalog-split {
+    margin-top: 36px;
+}
+
 .products-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -772,8 +776,10 @@ section {
 
 .price-tag {
     position: absolute;
-    left: 10px;
-    bottom: 10px;
+    top: 10px;
+    right: 10px;
+    left: auto;
+    bottom: auto;
     z-index: 2;
     background: rgba(4, 20, 12, .9);
     color: var(--lime);

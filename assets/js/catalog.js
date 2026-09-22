@@ -1,10 +1,10 @@
 (function (global) {
-    var STORAGE_KEY = "millz.catalog.v1";
+    var STORAGE_KEY = "millz.catalog.v2";
     var ADMIN_KEY = "millz.admin.ok";
     var CATALOG_URL = "/data/catalog.json";
 
     var MILLZ_WA = "255683179360";
-    var MILLZ_WA_DISPLAY = "+255 683 179 360";
+    var MILLZ_WA_DISPLAY = "0683179360";
     var MILLZ_HALOPESA = "0627041240";
     var ADMIN_PASSWORD = "MILLZ005";
 
@@ -20,15 +20,33 @@
         return isFinite(n) && n > 0 ? n : null;
     }
 
+    function isFree(item) {
+        if (!item || typeof item !== "object") return false;
+        if (item.paid === false) return true;
+        if (String(item.tier || "").toLowerCase() === "free") return true;
+        return false;
+    }
+
     function formatPrice(price) {
         var n = toNumber(price);
         if (n === null) return "Bei: WhatsApp";
         return "TSh " + Math.round(n).toLocaleString("en-US");
     }
 
-    function buyUrl(name, price, kind) {
+    function formatItemPrice(item) {
+        if (isFree(item)) return "Free";
+        return formatPrice(item && item.price);
+    }
+
+    function buyUrl(name, price, kind, item) {
         var label = kind === "tip" ? "eFootball tips" : (kind || "game");
-        var msg = "Hujambo MILLZ GAMES\nNataka kununua " + label + ": " + name + "\nBei: " + formatPrice(price).replace(/^Bei:\s*/, "") + "\nNitalipa HaloPesa " + MILLZ_HALOPESA + ".\nTafadhali nipe access code.";
+        var free = isFree(item);
+        var priceText = free ? "Free" : formatPrice(price).replace(/^Bei:\s*/, "");
+        var verb = free ? "Nataka game ya bure" : "Nataka kununua";
+        var msg = "Hujambo MILLZ GAMES\n" + verb + " " + label + ": " + name + "\nBei: " + priceText + "\nNitalipa HaloPesa " + MILLZ_HALOPESA + ".\nTafadhali nipe access code.";
+        if (free) {
+            msg = "Hujambo MILLZ GAMES\n" + verb + ": " + name + "\nTafadhali nipe link.";
+        }
         return "https://wa.me/" + MILLZ_WA + "?text=" + encodeURIComponent(msg);
     }
 
@@ -148,6 +166,8 @@
         HALOPESA: MILLZ_HALOPESA,
         esc: esc,
         formatPrice: formatPrice,
+        formatItemPrice: formatItemPrice,
+        isFree: isFree,
         buyUrl: buyUrl,
         waLink: waLink,
         publishedItems: publishedItems,

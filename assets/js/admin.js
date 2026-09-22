@@ -63,7 +63,7 @@
             return '<article class="admin-item">' +
                 img +
                 "<div><strong>" + MILLZ.esc(item.name) + "</strong>" +
-                "<span>" + MILLZ.esc(item.kind || "game") + " · " + MILLZ.esc(MILLZ.formatPrice(item.price)) + "</span>" +
+                "<span>" + MILLZ.esc(item.kind || "game") + " · " + (MILLZ.isFree(item) ? "Free" : "Paid") + " · " + MILLZ.esc(MILLZ.formatItemPrice(item)) + " · " + MILLZ.esc(item.platform || "Android / Windows") + "</span>" +
                 (item.link ? '<a href="' + MILLZ.esc(item.link) + '" target="_blank" rel="noopener">Link</a>' : "<em>Hakuna link</em>") +
                 "</div>" +
                 '<div class="admin-item-actions">' +
@@ -104,6 +104,7 @@
         document.getElementById("itemName").value = item.name || "";
         document.getElementById("itemPrice").value = MILLZ.toNumber(item.price) || "";
         document.getElementById("itemPlatform").value = item.platform || "Android / Windows";
+        document.getElementById("itemPaid").value = MILLZ.isFree(item) ? "free" : "paid";
         document.getElementById("itemLink").value = item.link || "";
         document.getElementById("itemCoverUrl").value = (item.cover && item.cover.indexOf("data:") !== 0) ? item.cover : "";
         document.getElementById("itemFeatured").checked = !!item.featured;
@@ -121,6 +122,7 @@
         document.getElementById("itemId").value = "";
         document.getElementById("itemPublished").checked = true;
         document.getElementById("itemPlatform").value = "Android / Windows";
+        document.getElementById("itemPaid").value = "paid";
         document.getElementById("formTitle").textContent = "Ongeza game";
         editingCover = "";
         coverPreview.hidden = true;
@@ -150,8 +152,9 @@
             name: document.getElementById("itemName").value.trim(),
             kind: kind,
             tag: document.getElementById("itemTag").value.trim() || (kind === "app" ? "App" : "Game"),
-            platform: document.getElementById("itemPlatform").value.trim() || "Multi",
+            platform: document.getElementById("itemPlatform").value.trim() || "Android / Windows",
             price: MILLZ.toNumber(document.getElementById("itemPrice").value),
+            paid: document.getElementById("itemPaid").value !== "free",
             cover: editingCover || coverUrl,
             wide: editingCover || coverUrl,
             link: document.getElementById("itemLink").value.trim(),
@@ -173,7 +176,7 @@
         var savedName = item.name;
         resetForm();
         formOk.hidden = false;
-        formOk.textContent = savedName + " imehifadhiwa. Bei itaonekana chini ya cover kwenye store.";
+        formOk.textContent = savedName + " imehifadhiwa. Bei itaonekana juu ya cover kwenye store.";
     });
 
     function persist() {

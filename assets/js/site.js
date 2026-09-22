@@ -104,9 +104,17 @@ document.querySelectorAll("#categories .category[data-filter]").forEach(function
         const filter = (this.getAttribute("data-filter") || "all").toLowerCase();
         document.querySelectorAll(".game-card").forEach(function (card) {
             const category = (card.getAttribute("data-category") || "").toLowerCase();
-            card.style.display = (filter === "all" || category === filter) ? "" : "none";
+            const tier = (card.getAttribute("data-tier") || "paid").toLowerCase();
+            let show = true;
+            if (filter === "paid" || filter === "free") show = tier === filter;
+            else if (filter !== "all") show = category === filter;
+            card.style.display = show ? "" : "none";
         });
-        const games = document.getElementById("games");
+        const paidSec = document.getElementById("paid");
+        const freeSec = document.getElementById("free");
+        if (paidSec) paidSec.style.display = filter === "free" ? "none" : "";
+        if (freeSec) freeSec.style.display = filter === "paid" ? "none" : "";
+        const games = document.getElementById(filter === "free" ? "free" : "games");
         if (games) games.scrollIntoView({ behavior: "smooth" });
     });
 });
@@ -167,32 +175,47 @@ if (buyModal) {
 }
 
 function buyAttrs(item) {
-    const priceLabel = MILLZ.formatPrice(item.price);
-    return 'data-buy data-name="' + MILLZ.esc(item.name) + '" data-price="' + MILLZ.esc(priceLabel) + '" data-img="' + MILLZ.esc(item.cover || "") + '" data-kind="' + MILLZ.esc(item.kind || "game") + '" data-wa="' + MILLZ.esc(MILLZ.buyUrl(item.name, item.price, item.kind)) + '"';
+    const priceLabel = MILLZ.formatItemPrice(item);
+    return 'data-buy data-name="' + MILLZ.esc(item.name) + '" data-price="' + MILLZ.esc(priceLabel) + '" data-img="' + MILLZ.esc(item.cover || "") + '" data-kind="' + MILLZ.esc(item.kind || "game") + '" data-wa="' + MILLZ.esc(MILLZ.buyUrl(item.name, item.price, item.kind, item)) + '"';
+}
+
+function platformMeta(platform) {
+    const p = platform || "Android / Windows";
+    const bits = [];
+    if (/android/i.test(p)) bits.push('<i class="fa-brands fa-android"></i> Android');
+    if (/windows/i.test(p)) bits.push('<i class="fa-brands fa-windows"></i> Windows');
+    if (!bits.length) return '<div class="meta"><i class="fa-solid fa-desktop"></i> ' + MILLZ.esc(p) + "</div>";
+    return '<div class="meta">' + bits.join(" · ") + "</div>";
 }
 
 function productCard(item) {
     const kind = item.kind === "app" ? "app" : "game";
+    const free = MILLZ.isFree(item);
     const cover = item.cover
         ? '<img src="' + MILLZ.esc(item.cover) + '" alt="' + MILLZ.esc(item.name) + '">'
         : '<div class="no-image">NO COVER</div>';
-    const priceLabel = MILLZ.formatPrice(item.price);
-    return '<article class="product-card searchable ' + kind + '-card" data-name="' + MILLZ.esc((item.name || "").toLowerCase()) + '" data-category="' + MILLZ.esc(item.tag || "") + '">' +
+    const priceLabel = MILLZ.formatItemPrice(item);
+    const cta = free && item.link
+        ? '<a href="' + MILLZ.esc(item.link) + '" class="product-btn buy" target="_blank" rel="noopener">Get free</a>'
+        : '<button type="button" class="product-btn buy" ' + buyAttrs(item) + ">" + (free ? "Get free" : "Buy now") + "</button>";
+    return '<article class="product-card searchable ' + kind + '-card" data-name="' + MILLZ.esc((item.name || "").toLowerCase()) + '" data-category="' + MILLZ.esc(item.tag || "") + '" data-tier="' + (free ? "free" : "paid") + '">' +
         '<div class="product-image">' + cover + '<div class="price-tag">' + MILLZ.esc(priceLabel) + "</div></div>" +
         '<div class="product-info"><h3>' + MILLZ.esc(item.name) + "</h3>" +
         '<div class="price">' + MILLZ.esc(priceLabel) + "</div>" +
         '<div class="meta"><i class="fa-solid fa-layer-group"></i> ' + MILLZ.esc(item.tag || kind) + "</div>" +
-        '<div class="meta"><i class="fa-solid fa-desktop"></i> ' + MILLZ.esc(item.platform || "Multi") + "</div>" +
+        platformMeta(item.platform) +
         '<div class="product-actions">' +
-        '<button type="button" class="product-btn buy" ' + buyAttrs(item) + ">Buy now</button>" +
+        cta +
         '<a href="/#access" class="product-btn">Get access</a>' +
         "</div></div></article>";
 }
 
 function renderStore(catalog) {
     const games = MILLZ.publishedItems(catalog.games);
+    const paidGames = games.filter(function (g) { return !MILLZ.isFree(g); });
+    const freeGames = games.filter(function (g) { return MILLZ.isFree(g); });
     const apps = MILLZ.publishedItems(catalog.apps);
-    const featured = games.find(function (g) { return g.featured; }) || games[0];
+    const featured = paidGames.find(function (g) { return g.featured; }) || games[0];
     const wides = games.map(function (g) { return g.wide || g.cover; }).filter(Boolean).slice(0, 5);
 
     const heroBg = document.getElementById("heroBg");
@@ -205,15 +228,15 @@ function renderStore(catalog) {
     const heroFeature = document.getElementById("heroFeature");
     if (heroFeature && featured) {
         heroFeature.setAttribute("data-name", featured.name);
-        heroFeature.setAttribute("data-price", MILLZ.formatPrice(featured.price));
+        heroFeature.setAttribute("data-price", MILLZ.formatItemPrice(featured));
         heroFeature.setAttribute("data-img", featured.cover || "");
         heroFeature.setAttribute("data-kind", "game");
-        heroFeature.setAttribute("data-wa", MILLZ.buyUrl(featured.name, featured.price, "game"));
+        heroFeature.setAttribute("data-wa", MILLZ.buyUrl(featured.name, featured.price, "game", featured));
         heroFeature.setAttribute("data-buy", "");
         heroFeature.innerHTML =
             '<img src="' + MILLZ.esc(featured.wide || featured.cover || "") + '" alt="' + MILLZ.esc(featured.name) + '">' +
             '<div class="hero-feature-copy"><small>Featured</small><h2>' + MILLZ.esc(featured.name) + "</h2>" +
-            '<p>' + MILLZ.esc(featured.tag || "Action") + " · " + MILLZ.esc(MILLZ.formatPrice(featured.price)) + "</p>" +
+            '<p>' + MILLZ.esc(featured.tag || "Action") + " · " + MILLZ.esc(MILLZ.formatItemPrice(featured)) + " · " + MILLZ.esc(featured.platform || "Android / Windows") + "</p>" +
             '<span class="btn btn-primary">Buy now</span></div>';
     }
 
@@ -229,21 +252,28 @@ function renderStore(catalog) {
             article.className = "cover-slide" + (i === 0 ? " active" : i === 1 ? " next" : i === games.length - 1 ? " prev" : "");
             article.setAttribute("data-buy", "");
             article.dataset.name = game.name;
-            article.dataset.price = MILLZ.formatPrice(game.price);
+            article.dataset.price = MILLZ.formatItemPrice(game);
             article.dataset.img = game.cover || "";
             article.dataset.kind = "game";
-            article.dataset.wa = MILLZ.buyUrl(game.name, game.price, "game");
+            article.dataset.wa = MILLZ.buyUrl(game.name, game.price, "game", game);
             article.dataset.tag = game.tag || "Game";
-            article.innerHTML = '<img src="' + MILLZ.esc(game.cover || "") + '" alt="' + MILLZ.esc(game.name) + '"><div class="price-tag">' + MILLZ.esc(MILLZ.formatPrice(game.price)) + "</div>";
+            article.innerHTML = '<img src="' + MILLZ.esc(game.cover || "") + '" alt="' + MILLZ.esc(game.name) + '"><div class="price-tag">' + MILLZ.esc(MILLZ.formatItemPrice(game)) + "</div>";
             rotator.insertBefore(article, nextBtn);
         });
     }
 
-    const gameGrid = document.getElementById("gameGrid");
-    if (gameGrid) {
-        gameGrid.innerHTML = games.length
-            ? games.map(productCard).join("")
-            : '<div class="empty">Hakuna games bado. Admin anaweza kuongeza kwenye /admin.html</div>';
+    const paidGrid = document.getElementById("paidGrid") || document.getElementById("gameGrid");
+    if (paidGrid) {
+        paidGrid.innerHTML = paidGames.length
+            ? paidGames.map(productCard).join("")
+            : '<div class="empty">Paid games zitaonekana hapa baada ya admin kuziongeza.</div>';
+    }
+
+    const freeGrid = document.getElementById("freeGrid");
+    if (freeGrid) {
+        freeGrid.innerHTML = freeGames.length
+            ? freeGames.map(productCard).join("")
+            : '<div class="empty">Free games zitaonekana hapa. Admin anaweza kuongeza gemu za bure kwenye /admin.html</div>';
     }
 
     const appGrid = document.getElementById("appGrid");
@@ -258,12 +288,12 @@ function renderStore(catalog) {
         const tip = catalog.tips;
         tipsBuy.setAttribute("data-buy", "");
         tipsBuy.dataset.name = tip.name;
-        tipsBuy.dataset.price = MILLZ.formatPrice(tip.price);
+        tipsBuy.dataset.price = MILLZ.formatItemPrice(tip);
         tipsBuy.dataset.img = tip.cover || "";
         tipsBuy.dataset.kind = "tip";
-        tipsBuy.dataset.wa = MILLZ.buyUrl(tip.name, tip.price, "tip");
+        tipsBuy.dataset.wa = MILLZ.buyUrl(tip.name, tip.price, "tip", tip);
         const tipsPrice = document.getElementById("tipsPrice");
-        if (tipsPrice) tipsPrice.textContent = MILLZ.formatPrice(tip.price);
+        if (tipsPrice) tipsPrice.textContent = MILLZ.formatItemPrice(tip);
     }
 
     initHeroSlides();
