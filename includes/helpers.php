@@ -36,14 +36,13 @@ if (!function_exists("millz_showcase_games")) {
     function millz_showcase_games()
     {
         return [
-            ["name" => "Grand Theft Auto VI", "image" => "assets/img/games/gta-vi.jpg", "wide" => "assets/img/games/gta-vi-wide.jpg", "tag" => "Action"],
             ["name" => "Football 2027", "image" => "assets/img/games/football-2027.jpg", "wide" => "assets/img/games/football-2027-wide.jpg", "tag" => "Sports"],
             ["name" => "EA Sports FC 27", "image" => "assets/img/games/fc-27.jpg", "wide" => "assets/img/games/fc-27-wide.jpg", "tag" => "Sports"],
             ["name" => "Subway Surfers", "image" => "assets/img/games/subway.jpg", "wide" => "assets/img/games/subway-wide.jpg", "tag" => "Arcade"],
             ["name" => "GTA San Andreas", "image" => "assets/img/games/gta-sa.jpg", "wide" => "assets/img/games/gta-v-wide.jpg", "tag" => "Action"],
             ["name" => "Call of Duty", "image" => "assets/img/games/cod.jpg", "wide" => "assets/img/games/pubg-wide.jpg", "tag" => "Shooter"],
             ["name" => "PUBG Battlegrounds", "image" => "assets/img/games/pubg.jpg", "wide" => "assets/img/games/pubg-wide.jpg", "tag" => "Battle Royale"],
-            ["name" => "GTA Vice City", "image" => "assets/img/games/gta-vice.jpg", "wide" => "assets/img/games/gta-vi-wide.jpg", "tag" => "Action"],
+            ["name" => "GTA Vice City", "image" => "assets/img/games/gta-vice.jpg", "wide" => "assets/img/games/gta-v-wide.jpg", "tag" => "Action"],
         ];
     }
 }

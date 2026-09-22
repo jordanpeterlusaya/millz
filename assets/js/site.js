@@ -220,7 +220,7 @@ function renderStore(catalog) {
 
     const heroBg = document.getElementById("heroBg");
     if (heroBg) {
-        heroBg.innerHTML = (wides.length ? wides : ["/assets/img/games/gta-vi-wide.jpg"]).map(function (src, i) {
+        heroBg.innerHTML = (wides.length ? wides : ["/assets/img/games/football-2027-wide.jpg"]).map(function (src, i) {
             return '<div class="hero-slide' + (i === 0 ? " active" : "") + '" style="background-image:url(\'' + MILLZ.esc(src) + "');\"></div>";
         }).join("");
     }

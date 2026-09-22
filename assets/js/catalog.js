@@ -1,5 +1,5 @@
 (function (global) {
-    var STORAGE_KEY = "millz.catalog.v2";
+    var STORAGE_KEY = "millz.catalog.v3";
     var ADMIN_KEY = "millz.admin.ok";
     var CATALOG_URL = "/data/catalog.json";
 

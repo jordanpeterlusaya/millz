@@ -84,8 +84,8 @@ if (empty($homeGames)) {
     }
 }
 $spotlight = $featuredGames[0] ?? $homeGames[0] ?? null;
-$spotName = $spotlight["name"] ?? "Grand Theft Auto VI";
-$spotCover = $spotlight ? millz_cover($spotlight) : "assets/img/games/gta-vi.jpg";
+$spotName = $spotlight["name"] ?? "Football 2027";
+$spotCover = $spotlight ? millz_cover($spotlight) : "assets/img/games/football-2027.jpg";
 $spotWide = $spotlight["wide"] ?? $spotCover;
 $spotTag = $spotlight["category_name"] ?? "Action";
 $spotPrice = millz_price($spotlight["price"] ?? null);
