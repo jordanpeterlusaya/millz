@@ -337,7 +337,7 @@ $current = "home";
         <div class="social-row">
             <?php foreach ($socials as $social): ?>
                 <a class="social-pill" href="<?= htmlspecialchars($social["url"]) ?>" target="_blank" rel="noopener">
-                    <img src="<?= htmlspecialchars($social["icon"]) ?>" alt="">
+                    <?= millz_social_mark($social["id"]) ?>
                     <div>
                         <strong><?= htmlspecialchars($social["label"]) ?></strong>
                         <span><?= htmlspecialchars($social["handle"]) ?></span>
@@ -385,7 +385,7 @@ $current = "home";
             <p>WhatsApp 0683179360 · HaloPesa 0627041240</p>
             <div class="contact-grid" style="grid-template-columns:1fr;margin-bottom:18px;">
                 <a class="contact-card" href="https://wa.me/255683179360" target="_blank" rel="noopener">
-                    <img src="assets/img/social/whatsapp.svg" alt="WhatsApp" style="width:28px;height:28px;margin:0 auto 8px;">
+                    <?= millz_social_mark("whatsapp") ?>
                     <h3>WhatsApp</h3>
                     <p>Buy, access codes and custom requests.</p>
                 </a>

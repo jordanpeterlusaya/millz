@@ -40,7 +40,7 @@ $tipsBuy = millz_buy_url("eFootball Tips Pack", null, "tip");
                 data-wa="<?= htmlspecialchars($tipsBuy, ENT_QUOTES) ?>"
             >Buy tips</button>
             <a class="btn btn-outline" href="https://youtube.com/@millzjasper" target="_blank" rel="noopener">
-                <img src="assets/img/social/youtube.svg" alt="" style="width:18px;height:18px;"> Watch MILLZ JASPER
+                <?= millz_social_mark("youtube") ?> Watch MILLZ JASPER
             </a>
         </div>
     </div>

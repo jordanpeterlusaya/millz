@@ -10,8 +10,8 @@ $socials = millz_socials();
             <p>Buy games, apps and eFootball tips. Pay via HaloPesa, then unlock with your access code.</p>
             <div class="footer-socials">
                 <?php foreach ($socials as $social): ?>
-                    <a class="icon-btn social-brand" href="<?= htmlspecialchars($social["url"]) ?>" target="_blank" rel="noopener" aria-label="<?= htmlspecialchars($social["label"]) ?>">
-                        <img src="<?= htmlspecialchars($social["icon"]) ?>" alt="<?= htmlspecialchars($social["label"]) ?>">
+                    <a class="icon-btn social-brand <?= htmlspecialchars($social["id"]) ?>" href="<?= htmlspecialchars($social["url"]) ?>" target="_blank" rel="noopener" aria-label="<?= htmlspecialchars($social["label"]) ?>">
+                        <?= millz_social_mark($social["id"]) ?>
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -68,7 +68,7 @@ $socials = millz_socials();
         </div>
         <div class="buy-actions">
             <a id="buyWhatsApp" class="btn btn-primary" href="https://wa.me/255683179360" target="_blank" rel="noopener">
-                <img src="assets/img/social/whatsapp.svg" alt="" style="width:18px;height:18px;"> Continue on WhatsApp
+                <?= millz_social_mark("whatsapp") ?> Continue on WhatsApp
             </a>
         </div>
     </div>

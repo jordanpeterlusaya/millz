@@ -36,13 +36,20 @@ $headerSocials = array_filter($socials, function ($s) {
             <li><a href="contact.php" class="<?= $current === 'contact' ? 'active' : '' ?>">Contact</a></li>
             <li><a href="access.php" class="<?= $current === 'access' ? 'active' : '' ?>">Access</a></li>
             <li><a href="/admin.html">Admin</a></li>
+            <li class="header-socials">
+                <?php foreach ($headerSocials as $social): ?>
+                    <a class="social-brand <?= htmlspecialchars($social["id"]) ?>" href="<?= htmlspecialchars($social["url"]) ?>" target="_blank" rel="noopener" aria-label="<?= htmlspecialchars($social["label"]) ?>">
+                        <?= millz_social_mark($social["id"]) ?>
+                    </a>
+                <?php endforeach; ?>
+            </li>
         </ul>
 
         <div class="nav-actions">
             <div class="social-mini">
                 <?php foreach ($headerSocials as $social): ?>
                     <a class="social-brand <?= htmlspecialchars($social["id"]) ?>" href="<?= htmlspecialchars($social["url"]) ?>" target="_blank" rel="noopener" aria-label="<?= htmlspecialchars($social["label"]) ?>">
-                        <img src="<?= htmlspecialchars($social["icon"]) ?>" alt="<?= htmlspecialchars($social["label"]) ?>">
+                        <?= millz_social_mark($social["id"]) ?>
                     </a>
                 <?php endforeach; ?>
             </div>
