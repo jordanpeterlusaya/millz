@@ -167,11 +167,6 @@ function closeBuyModal() {
 }
 
 document.addEventListener("click", function (e) {
-    const accessBtn = e.target.closest("[data-access]");
-    if (accessBtn) {
-        openAccessFor(accessBtn.getAttribute("data-access"));
-        return;
-    }
     const btn = e.target.closest("[data-buy]");
     if (btn) {
         openBuyModal(btn.dataset.name, btn.dataset.price, btn.dataset.img, btn.dataset.wa);
@@ -208,25 +203,17 @@ function productCard(item) {
         : '<div class="no-image">NO COVER</div>';
     const priceLabel = MILLZ.formatItemPrice(item);
     const priceTag = free ? "" : '<div class="price-tag">' + MILLZ.esc(priceLabel) + "</div>";
-    let actions;
-    if (free) {
-        const getFree = item.link
-            ? '<a href="' + MILLZ.esc(item.link) + '" class="product-btn buy" target="_blank" rel="noopener">Get free</a>'
-            : '<button type="button" class="product-btn buy" ' + buyAttrs(item) + ">Get free</button>";
-        actions = getFree;
-    } else {
-        actions =
-            '<button type="button" class="product-btn buy" data-access="' + MILLZ.esc(item.id) + '">Get Access</button>' +
-            '<button type="button" class="product-btn" ' + buyAttrs(item) + ">Buy now</button>";
-    }
+    const cta = free && item.link
+        ? '<a href="' + MILLZ.esc(item.link) + '" class="product-btn buy" target="_blank" rel="noopener">Get free</a>'
+        : '<button type="button" class="product-btn buy" ' + buyAttrs(item) + ">" + (free ? "Get free" : "Buy now") + "</button>";
     return '<article class="product-card searchable ' + kind + '-card" data-id="' + MILLZ.esc(item.id || "") + '" data-name="' + MILLZ.esc((item.name || "").toLowerCase()) + '" data-category="' + MILLZ.esc(item.tag || "") + '" data-tier="' + (free ? "free" : "paid") + '">' +
         '<div class="product-image">' + cover + priceTag + "</div>" +
         '<div class="product-info"><h3>' + MILLZ.esc(item.name) + "</h3>" +
         '<div class="price">' + MILLZ.esc(priceLabel) + "</div>" +
         '<div class="meta"><i class="fa-solid fa-layer-group"></i> ' + MILLZ.esc(item.tag || kind) + "</div>" +
         platformMeta(item.platform) +
-        '<div class="product-actions' + (free ? " single" : "") + '">' +
-        actions +
+        '<div class="product-actions single">' +
+        cta +
         "</div></div></article>";
 }
 
@@ -299,7 +286,7 @@ function renderStore(catalog) {
     if (appGrid) {
         appGrid.innerHTML = apps.length
             ? apps.map(productCard).join("")
-            : '<div class="empty">Apps published in admin will appear here with Buy now and Get access.</div>';
+            : '<div class="empty">Apps published in admin will appear here with Buy now.</div>';
     }
 
     const tipsBuy = document.getElementById("tipsBuy");
@@ -317,49 +304,6 @@ function renderStore(catalog) {
 
     initHeroSlides();
     initCoverRotator();
-    fillAccessGames(games.concat(apps), catalog);
-}
-
-let storeCatalog = { games: [], apps: [], tips: null };
-
-function fillAccessGames(items, catalog) {
-    storeCatalog = catalog || storeCatalog;
-    const select = document.getElementById("accessGame");
-    if (!select) return;
-    const paid = (items || []).filter(function (item) { return !MILLZ.isFree(item); });
-    const current = select.value;
-    select.innerHTML = paid.length
-        ? paid.map(function (item) {
-            return '<option value="' + MILLZ.esc(item.id) + '">' + MILLZ.esc(item.name) + "</option>";
-        }).join("")
-        : '<option value="">Hakuna gemu ya kulipia</option>';
-    if (current && paid.some(function (item) { return item.id === current; })) select.value = current;
-}
-
-function findStoreItem(id) {
-    const games = storeCatalog.games || [];
-    const apps = storeCatalog.apps || [];
-    const tips = storeCatalog.tips ? [storeCatalog.tips] : [];
-    return games.concat(apps, tips).find(function (item) { return item && item.id === id; }) || null;
-}
-
-function openAccessFor(gameId) {
-    const access = document.getElementById("access");
-    const select = document.getElementById("accessGame");
-    if (select && gameId) select.value = gameId;
-    if (access) access.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function showCodeResult(entry) {
-    const box = document.getElementById("codeResult");
-    const value = document.getElementById("codeValue");
-    const expiry = document.getElementById("codeExpiry");
-    const wa = document.getElementById("codeWhatsApp");
-    if (!box || !entry) return;
-    if (value) value.textContent = entry.code;
-    if (expiry) expiry.textContent = "Ina-expire: " + MILLZ.formatExpiry(entry.expiresAt) + " (masaa 24)";
-    if (wa) wa.href = MILLZ.codeWhatsApp(entry);
-    box.hidden = false;
 }
 
 function showUnlock(message, href) {
@@ -380,43 +324,19 @@ function showUnlock(message, href) {
     }
 }
 
-const generateCodeBtn = document.getElementById("generateCodeBtn");
-if (generateCodeBtn) {
-    generateCodeBtn.addEventListener("click", function () {
-        const select = document.getElementById("accessGame");
-        const game = findStoreItem(select && select.value);
-        if (!game) {
-            showCodeResult({ code: "—", expiresAt: Date.now(), gameName: "" });
-            const expiry = document.getElementById("codeExpiry");
-            if (expiry) expiry.textContent = "Chagua gemu ya kulipia kwanza.";
-            return;
-        }
-        MILLZ.createAccessCode(game).then(showCodeResult);
-    });
-}
-
 const unlockForm = document.getElementById("unlockForm");
 if (unlockForm) {
     unlockForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        const raw = (document.getElementById("unlockCode") || {}).value || "";
-        MILLZ.findCode(raw).then(function (entry) {
-            if (!entry) {
-                showUnlock("Kodi si sahihi.", "");
-                return;
-            }
-            if (MILLZ.isCodeExpired(entry)) {
-                showUnlock("Kodi ime-expire. Tengeneza kodi mpya (masaa 24).", "");
-                return;
-            }
-            const game = findStoreItem(entry.gameId);
-            const link = game && game.link ? game.link : "";
-            if (link) {
-                showUnlock("Kodi ni sahihi kwa " + entry.gameName + ". Lipa HaloPesa 0627041240 kisha tuma kodi kwenye WhatsApp 0683179360. Download iko hapa baada ya Get Access.", link);
-            } else {
-                showUnlock("Kodi " + entry.code + " ni sahihi kwa " + entry.gameName + ". Lipa HaloPesa 0627041240 kisha tuma kodi kwenye WhatsApp 0683179360 ili admin athibitishe na akupe download.", "");
-            }
-        });
+        const raw = String((document.getElementById("unlockCode") || {}).value || "").trim();
+        if (!raw) {
+            showUnlock("Weka kodi uliyopewa na admin baada ya malipo.", "");
+            return;
+        }
+        const msg = "Hujambo MILLZ GAMES\nNimeshalipa HaloPesa 0627041240.\nAccess code: " + raw + "\nTafadhali thibitisha na unipe download.";
+        showUnlock("Tuma kodi kwenye WhatsApp 0683179360 ili admin athibitishe na akupe download.", "https://wa.me/255683179360?text=" + encodeURIComponent(msg));
+        const link = document.getElementById("unlockDownload");
+        if (link) link.textContent = "Send code on WhatsApp";
     });
 }
 

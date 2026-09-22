@@ -1954,26 +1954,11 @@ section {
     font: inherit;
 }
 
-.code-result[hidden],
 #unlockMsg[hidden],
 #unlockDownload[hidden] {
     display: none !important;
 }
 
-.code-box {
-    font-family: var(--display);
-    font-size: 28px;
-    letter-spacing: .08em;
-    color: var(--lime);
-    text-align: center;
-    padding: 16px;
-    border: 1px solid rgba(0, 255, 136, .35);
-    border-radius: 12px;
-    margin: 12px 0 8px;
-    background: rgba(0, 255, 136, .06);
-}
-
-#codeExpiry,
 #unlockMsg {
     color: var(--muted);
     margin: 8px 0 12px;

@@ -212,35 +212,6 @@
     margin-top: 10px;
 }
 
-.notify-item {
-    padding: 14px;
-    border: 1px solid rgba(0, 255, 136, .28);
-    border-radius: 12px;
-    background: rgba(0, 255, 136, .06);
-    margin-bottom: 10px;
-}
-
-.notify-item p {
-    margin: 0 0 10px;
-    line-height: 1.55;
-    color: #f3f4f2;
-}
-
-.notify-item .meta {
-    color: #8b8e8c;
-    font-size: 13px;
-    margin-bottom: 10px;
-}
-
-.notify-item.expired {
-    border-color: rgba(255, 80, 80, .35);
-    background: rgba(255, 80, 80, .06);
-}
-
-.notify-item.paid {
-    border-color: rgba(0, 255, 136, .5);
-}
-
 @media (max-width: 700px) {
     .admin-row,
     .admin-item {

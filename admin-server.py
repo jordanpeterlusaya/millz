@@ -7,7 +7,6 @@ Serves the store and saves catalog + covers to files on this machine.
 
 Then open:
   http://127.0.0.1:8765/admin.html
-  Code: MILLZ005
 """
 
 from __future__ import annotations
@@ -23,7 +22,6 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parent
 CATALOG = ROOT / "data" / "catalog.json"
-CODES = ROOT / "data" / "codes.json"
 COVERS = ROOT / "assets" / "img" / "games"
 ADMIN_CODE = "MILLZ005"
 PREFERRED_PORT = 8765
@@ -79,12 +77,8 @@ class Handler(SimpleHTTPRequestHandler):
                     "local": True,
                     "disk": True,
                     "admin": "/admin.html",
-                    "codeHint": "MILLZ005",
                 },
             )
-            return
-        if path == "/api/codes":
-            self.list_codes()
             return
         super().do_GET()
 
@@ -96,65 +90,7 @@ class Handler(SimpleHTTPRequestHandler):
         if path == "/api/cover":
             self.save_cover()
             return
-        if path == "/api/codes":
-            self.add_code()
-            return
-        if path == "/api/codes/paid":
-            self.mark_code_paid()
-            return
         self.send_error(404, "Not found")
-
-    def read_codes(self) -> list:
-        try:
-            data = json.loads(CODES.read_text(encoding="utf-8"))
-            codes = data.get("codes") if isinstance(data, dict) else data
-            return codes if isinstance(codes, list) else []
-        except Exception:
-            return []
-
-    def write_codes(self, codes: list) -> None:
-        CODES.parent.mkdir(parents=True, exist_ok=True)
-        CODES.write_text(json.dumps({"codes": codes[:200]}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-
-    def list_codes(self) -> None:
-        if not check_admin(self):
-            send_json(self, {"ok": False, "error": "Admin code si sahihi au si localhost."}, 403)
-            return
-        send_json(self, {"ok": True, "codes": self.read_codes()})
-
-    def add_code(self) -> None:
-        if not is_local(self):
-            send_json(self, {"ok": False, "error": "Localhost tu."}, 403)
-            return
-        try:
-            entry = json.loads(read_body(self).decode("utf-8"))
-        except Exception:
-            send_json(self, {"ok": False, "error": "JSON si sahihi."}, 400)
-            return
-        if not isinstance(entry, dict) or not entry.get("code") or not entry.get("gameName"):
-            send_json(self, {"ok": False, "error": "Kodi haijakamilika."}, 400)
-            return
-        codes = [item for item in self.read_codes() if item.get("id") != entry.get("id")]
-        codes.insert(0, entry)
-        self.write_codes(codes)
-        send_json(self, {"ok": True, "disk": True})
-
-    def mark_code_paid(self) -> None:
-        if not check_admin(self):
-            send_json(self, {"ok": False, "error": "Admin code si sahihi au si localhost."}, 403)
-            return
-        try:
-            payload = json.loads(read_body(self).decode("utf-8"))
-            code_id = str(payload.get("id") or "")
-        except Exception:
-            send_json(self, {"ok": False, "error": "JSON si sahihi."}, 400)
-            return
-        codes = self.read_codes()
-        for item in codes:
-            if item.get("id") == code_id:
-                item["paid"] = True
-        self.write_codes(codes)
-        send_json(self, {"ok": True, "disk": True})
 
     def save_catalog(self) -> None:
         if not check_admin(self):
@@ -216,7 +152,6 @@ def main() -> None:
     print("MILLZ GAMES — local admin (bila database)", flush=True)
     print("Store:  http://127.0.0.1:%s/" % port, flush=True)
     print("Admin:  http://127.0.0.1:%s/admin.html" % port, flush=True)
-    print("Code:   %s" % ADMIN_CODE, flush=True)
     print("Saves:  data/catalog.json  +  assets/img/games/", flush=True)
     print("Ctrl+C kusimamisha.", flush=True)
     print("", flush=True)
