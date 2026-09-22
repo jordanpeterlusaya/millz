@@ -3,11 +3,19 @@ const navLinks = document.getElementById("navLinks");
 
 if (menuBtn && navLinks) {
     menuBtn.addEventListener("click", function () {
-        navLinks.classList.toggle("show");
+        const open = navLinks.classList.toggle("show");
+        menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        document.body.classList.toggle("nav-open", open);
+        const icon = menuBtn.querySelector("i");
+        if (icon) icon.className = open ? "fa-solid fa-xmark" : "fa-solid fa-bars";
     });
     navLinks.querySelectorAll("a").forEach(function (link) {
         link.addEventListener("click", function () {
             navLinks.classList.remove("show");
+            document.body.classList.remove("nav-open");
+            menuBtn.setAttribute("aria-expanded", "false");
+            const icon = menuBtn.querySelector("i");
+            if (icon) icon.className = "fa-solid fa-bars";
         });
     });
 }

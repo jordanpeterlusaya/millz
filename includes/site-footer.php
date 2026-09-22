@@ -75,4 +75,4 @@ $socials = millz_socials();
     </div>
 </div>
 
-<script src="assets/js/site.js"></script>
+<script src="/assets/js/site.js"></script>

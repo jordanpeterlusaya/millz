@@ -28,10 +28,6 @@ $headerSocials = array_filter($socials, function ($s) {
             <span class="brand-text">MILLZ <em>GAMES</em></span>
         </a>
 
-        <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-
         <ul class="nav-links" id="navLinks">
             <li><a href="index.php" class="<?= $current === 'home' ? 'active' : '' ?>">Home</a></li>
             <li><a href="games.php" class="<?= $current === 'games' ? 'active' : '' ?>">Games</a></li>
@@ -53,5 +49,9 @@ $headerSocials = array_filter($socials, function ($s) {
                 Shop games
             </a>
         </div>
+
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+        </button>
     </div>
 </header>
