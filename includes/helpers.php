@@ -36,6 +36,7 @@ if (!function_exists("millz_showcase_games")) {
     function millz_showcase_games()
     {
         return [
+            ["name" => "Grand Theft Auto V", "image" => "assets/img/games/gta-v.jpg", "wide" => "assets/img/games/gta-v-wide.jpg", "tag" => "Action"],
             ["name" => "Football 2027", "image" => "assets/img/games/football-2027.jpg", "wide" => "assets/img/games/football-2027-wide.jpg", "tag" => "Sports"],
             ["name" => "EA Sports FC 27", "image" => "assets/img/games/fc-27.jpg", "wide" => "assets/img/games/fc-27-wide.jpg", "tag" => "Sports"],
             ["name" => "Subway Surfers", "image" => "assets/img/games/subway.jpg", "wide" => "assets/img/games/subway-wide.jpg", "tag" => "Arcade"],

@@ -41,7 +41,11 @@
 
 <section class="hero" id="home">
 <div class="hero-bg" id="heroBg">
-<div class="hero-slide active" style="background-image:url('/assets/img/games/football-2027-wide.jpg');"></div>
+<div class="hero-slide active" style="background-image:url('/assets/img/games/gta-v-wide.jpg');"></div>
+<div class="hero-slide" style="background-image:url('/assets/img/games/fifa-wide.jpg');"></div>
+<div class="hero-slide" style="background-image:url('/assets/img/games/pubg-wide.jpg');"></div>
+<div class="hero-slide" style="background-image:url('/assets/img/games/subway-wide.jpg');"></div>
+<div class="hero-slide" style="background-image:url('/assets/img/games/fc-27-wide.jpg');"></div>
 </div>
 <div class="hero-grid">
 <div>
@@ -60,16 +64,16 @@
 </div>
 <div class="hero-meta"><div><strong id="gameCount">8</strong> Games</div><div><strong>Apps</strong> Premium apps</div><div><strong>24h</strong> Access codes</div></div>
 <div class="search-box hero-search">
-<input type="text" id="searchInput" placeholder="Search Football 2027, FC 27, Subway..." autocomplete="off">
+<input type="text" id="searchInput" placeholder="Search GTA V, Football 2027, FC 27..." autocomplete="off">
 <button type="button" id="searchBtn">Search</button>
 </div>
 </div>
-<button type="button" class="hero-feature" id="heroFeature" data-buy data-name="Football 2027" data-price="Bei: WhatsApp" data-img="/assets/img/games/football-2027.jpg" data-kind="game" data-wa="https://wa.me/255683179360">
-<img src="/assets/img/games/football-2027-wide.jpg" alt="Football 2027">
+<button type="button" class="hero-feature" id="heroFeature" data-buy data-name="Grand Theft Auto V" data-price="Bei: WhatsApp" data-img="/assets/img/games/gta-v.jpg" data-kind="game" data-wa="https://wa.me/255683179360">
+<img src="/assets/img/games/gta-v.jpg" alt="Grand Theft Auto V">
 <div class="hero-feature-copy">
 <small>Featured</small>
-<h2>Football 2027</h2>
-<p>Sports · Bei: WhatsApp</p>
+<h2>Grand Theft Auto V</h2>
+<p>Action · Bei: WhatsApp</p>
 <span class="btn btn-primary">Buy now</span>
 </div>
 </button>
@@ -78,16 +82,16 @@
 
 <section class="stats"><div class="container"><div class="how-strip">
 <div class="how-card"><em>01</em><h3>Choose a title</h3><p>Pick a game, app or eFootball tips pack. Bei iko juu ya kila cover.</p></div>
-<div class="how-card"><em>02</em><h3>Pay HaloPesa</h3><p>Send to <strong>0627041240</strong>, then share the screenshot on WhatsApp <strong>0683179360</strong>.</p></div>
-<div class="how-card"><em>03</em><h3>Unlock download</h3><p>Admin sends your access code. Enter it and continue.</p></div>
+<div class="how-card"><em>02</em><h3>Get Access</h3><p>Paid game: bonyeza <strong>Get Access</strong> kisha <strong>Generate Code</strong>. Kodi ina-expire masaa 24.</p></div>
+<div class="how-card"><em>03</em><h3>Pay & unlock</h3><p>Lipa HaloPesa <strong>0627041240</strong>, tuma kodi kwenye WhatsApp <strong>0683179360</strong>. Free games zinakuja moja kwa moja.</p></div>
 </div></div></section>
 <section class="alt drops-rotator" id="hot"><div class="container">
 <div class="section-title"><div><div class="section-kicker">Trending</div><h2>Tap a cover to buy</h2></div>
-<p>Football 2027, FC 27 and more — bei iko juu ya kila cover.</p></div>
+<p>GTA V, Football 2027, FC 27 and more — bei iko juu ya kila cover.</p></div>
 <div class="cover-rotator" id="coverRotator">
 <button class="rotator-nav prev" type="button" data-rotator-nav="prev">&lsaquo;</button>
 <button class="rotator-nav next" type="button" data-rotator-nav="next">&rsaquo;</button>
-</div><div class="rotator-caption" id="rotatorCaption">Football 2027</div>
+</div><div class="rotator-caption" id="rotatorCaption">Grand Theft Auto V</div>
 </div></section>
 <section id="games"><div class="container">
 <div class="section-title"><div><div class="section-kicker">Catalog</div><h2>Latest games</h2></div>
@@ -148,10 +152,26 @@
 <a class="contact-card" href="https://wa.me/255683179360" target="_blank"><img src="/assets/img/social/whatsapp.svg" alt="WhatsApp" style="width:28px;height:28px;margin:0 auto 8px;"><h3>WhatsApp</h3><p>Buy, access codes and custom requests — 0683179360</p></a>
 </div>
 <div class="home-panel" id="access">
-<div class="section-kicker">Already paid?</div>
-<h2>Access code</h2>
-<p>Enter your code to continue to the download.</p>
-<a href="https://wa.me/255683179360?text=Nimeshalipa%20HaloPesa%200627041240%2C%20nipe%20access%20code" class="btn btn-primary" target="_blank" rel="noopener">Request code on WhatsApp</a>
+<div class="section-kicker">Get Access</div>
+<h2>Generate Code</h2>
+<p>Chagua gemu ya kulipia, tengeneza kodi (masaa 24), lipa HaloPesa 0627041240, kisha tuma kodi kwenye WhatsApp 0683179360.</p>
+<div class="access-form">
+<label for="accessGame">Gemu</label>
+<select id="accessGame"><option value="">Inapakia...</option></select>
+<button type="button" class="btn btn-primary" id="generateCodeBtn">Generate Code</button>
+</div>
+<div id="codeResult" class="code-result" hidden>
+<div class="code-box" id="codeValue"></div>
+<p id="codeExpiry"></p>
+<a id="codeWhatsApp" class="btn btn-primary" href="https://wa.me/255683179360" target="_blank" rel="noopener">Tuma kodi kwenye WhatsApp</a>
+</div>
+<form id="unlockForm" class="access-form" style="margin-top:22px;">
+<label for="unlockCode">Tayari una kodi?</label>
+<input id="unlockCode" type="text" placeholder="MILLZ-XXXXXX" autocomplete="off">
+<button type="submit" class="btn btn-outline">Unlock download</button>
+</form>
+<p id="unlockMsg" hidden></p>
+<a id="unlockDownload" class="btn btn-primary" hidden target="_blank" rel="noopener">Download</a>
 <div class="payment-list" style="margin-top:18px;">
 <div class="payment"><i class="fa-solid fa-wallet"></i> HaloPesa 0627041240</div>
 <div class="payment"><i class="fa-brands fa-whatsapp"></i> WhatsApp 0683179360</div>
@@ -173,10 +193,10 @@
 <div class="buy-cover" id="buyCover"></div>
 <h3 id="buyName" style="text-align:center;">Game</h3>
 <div class="price" id="buyPrice" style="text-align:center;">Bei: WhatsApp</div>
-<div class="buy-steps">1. Lipa HaloPesa <strong>0627041240</strong><br>2. Tuma screenshot kwenye WhatsApp <strong>0683179360</strong><br>3. Pokea access code kutoka admin<br>4. Unlock download</div>
+<div class="buy-steps">1. Get Access → Generate Code (masaa 24)<br>2. Lipa HaloPesa <strong>0627041240</strong><br>3. Tuma kodi + screenshot kwenye WhatsApp <strong>0683179360</strong><br>4. Unlock download</div>
 <div class="buy-actions">
 <a id="buyWhatsApp" class="btn btn-primary" href="https://wa.me/255683179360" target="_blank"><img src="/assets/img/social/whatsapp.svg" alt="" style="width:18px;height:18px;"> Continue on WhatsApp</a>
-<a href="/#access" class="btn btn-outline">I already paid — get access</a>
+<a href="/#access" class="btn btn-outline">Get Access — generate code</a>
 </div></div></div>
 <script src="/assets/js/catalog.js"></script>
 <script src="/assets/js/site.js"></script>

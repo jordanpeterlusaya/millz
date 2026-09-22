@@ -1,19 +1,19 @@
 {
-  "version": 3,
+  "version": 5,
   "games": [
     {
-      "id": "gta-vi",
-      "name": "Grand Theft Auto VI",
+      "id": "gta-v",
+      "name": "Grand Theft Auto V",
       "kind": "game",
       "tag": "Action",
       "platform": "Android / Windows",
       "price": null,
       "paid": true,
-      "cover": "/assets/img/games/gta-vi.jpg",
-      "wide": "/assets/img/games/gta-vi-wide.jpg",
+      "cover": "/assets/img/games/gta-v.jpg",
+      "wide": "/assets/img/games/gta-v-wide.jpg",
       "link": "",
-      "featured": false,
-      "published": false
+      "featured": true,
+      "published": true
     },
     {
       "id": "football-2027",
@@ -26,7 +26,7 @@
       "cover": "/assets/img/games/football-2027.jpg",
       "wide": "/assets/img/games/football-2027-wide.jpg",
       "link": "",
-      "featured": true,
+      "featured": false,
       "published": true
     },
     {

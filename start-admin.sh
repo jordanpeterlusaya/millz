@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 cd "$(dirname "$0")"
-exec python3 admin-server.py
+exec python3 -u admin-server.py

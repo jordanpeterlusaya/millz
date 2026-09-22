@@ -812,6 +812,10 @@ section {
     gap: 8px;
 }
 
+.product-actions.single {
+    grid-template-columns: 1fr;
+}
+
 .product-btn.buy {
     background: var(--lime);
     color: var(--on-lime);
@@ -1927,6 +1931,53 @@ section {
     color: var(--muted);
     margin-bottom: 18px;
     line-height: 1.6;
+}
+
+.access-form {
+    display: grid;
+    gap: 10px;
+}
+
+.access-form label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.access-form select,
+.access-form input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: #0c0d0e;
+    color: #fff;
+    font: inherit;
+}
+
+.code-result[hidden],
+#unlockMsg[hidden],
+#unlockDownload[hidden] {
+    display: none !important;
+}
+
+.code-box {
+    font-family: var(--display);
+    font-size: 28px;
+    letter-spacing: .08em;
+    color: var(--lime);
+    text-align: center;
+    padding: 16px;
+    border: 1px solid rgba(0, 255, 136, .35);
+    border-radius: 12px;
+    margin: 12px 0 8px;
+    background: rgba(0, 255, 136, .06);
+}
+
+#codeExpiry,
+#unlockMsg {
+    color: var(--muted);
+    margin: 8px 0 12px;
+    line-height: 1.5;
 }
 
 @media (max-width: 1100px) {

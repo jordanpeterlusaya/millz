@@ -1,7 +1,9 @@
 (function (global) {
-    var STORAGE_KEY = "millz.catalog.v3";
+    var STORAGE_KEY = "millz.catalog.v5";
+    var CODES_KEY = "millz.codes.v1";
     var ADMIN_KEY = "millz.admin.ok";
     var CATALOG_URL = "/data/catalog.json";
+    var CODE_TTL = 24 * 60 * 60 * 1000;
 
     var MILLZ_WA = "255683179360";
     var MILLZ_WA_DISPLAY = "0683179360";
@@ -43,7 +45,7 @@
         var free = isFree(item);
         var priceText = free ? "Free" : formatPrice(price).replace(/^Bei:\s*/, "");
         var verb = free ? "Nataka game ya bure" : "Nataka kununua";
-        var msg = "Hujambo MILLZ GAMES\n" + verb + " " + label + ": " + name + "\nBei: " + priceText + "\nNitalipa HaloPesa " + MILLZ_HALOPESA + ".\nTafadhali nipe access code.";
+        var msg = "Hujambo MILLZ GAMES\n" + verb + " " + label + ": " + name + "\nBei: " + priceText + "\nNitalipa HaloPesa " + MILLZ_HALOPESA + ".\nTafadhali thibitisha malipo.";
         if (free) {
             msg = "Hujambo MILLZ GAMES\n" + verb + ": " + name + "\nTafadhali nipe link.";
         }
@@ -89,10 +91,16 @@
     }
 
     function pingLocal() {
-        return fetch("/api/status", { cache: "no-store" })
+        var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+        var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 1200) : null;
+        return fetch("/api/status", { cache: "no-store", signal: ctrl ? ctrl.signal : undefined })
             .then(function (res) { return res.ok ? res.json() : { local: false }; })
             .then(function (data) { return !!(data && data.local); })
-            .catch(function () { return false; });
+            .catch(function () { return false; })
+            .then(function (local) {
+                if (timer) clearTimeout(timer);
+                return local;
+            });
     }
 
     function adminHeaders(extra) {
@@ -171,6 +179,123 @@
         sessionStorage.removeItem(ADMIN_KEY);
     }
 
+    function readLocalCodes() {
+        try {
+            var parsed = JSON.parse(localStorage.getItem(CODES_KEY) || "[]");
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function writeLocalCodes(list) {
+        localStorage.setItem(CODES_KEY, JSON.stringify(list || []));
+    }
+
+    function upsertCode(list, entry) {
+        var next = (list || []).filter(function (item) { return item && item.id !== entry.id && item.code !== entry.code; });
+        next.unshift(entry);
+        return next;
+    }
+
+    function randomCode() {
+        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        var out = "MILLZ-";
+        for (var i = 0; i < 6; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
+        return out;
+    }
+
+    function formatExpiry(ms) {
+        try {
+            return new Date(ms).toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        } catch (e) {
+            return String(ms || "");
+        }
+    }
+
+    function isCodeExpired(entry) {
+        return !entry || !entry.expiresAt || Date.now() > Number(entry.expiresAt);
+    }
+
+    function codeNotice(entry) {
+        return "Kuna mteja ametengeneza kodi " + (entry.code || "") + ", ya gemu " + (entry.gameName || "") + ", na ita-expire muda " + formatExpiry(entry.expiresAt) + ".";
+    }
+
+    function codeWhatsApp(entry) {
+        var msg = "Hujambo MILLZ GAMES\nNimetengeneza kodi: " + entry.code + "\nGemu: " + entry.gameName + "\nIta-expire: " + formatExpiry(entry.expiresAt) + "\nNitalipa HaloPesa " + MILLZ_HALOPESA + ".\nTafadhali thibitisha malipo.";
+        return "https://wa.me/" + MILLZ_WA + "?text=" + encodeURIComponent(msg);
+    }
+
+    function createAccessCode(game) {
+        var now = Date.now();
+        var entry = {
+            id: uid("code"),
+            code: randomCode(),
+            gameId: game && game.id ? game.id : "",
+            gameName: game && game.name ? game.name : "Game",
+            createdAt: now,
+            expiresAt: now + CODE_TTL,
+            paid: false,
+            used: false
+        };
+        writeLocalCodes(upsertCode(readLocalCodes(), entry));
+        return fetch("/api/codes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(entry)
+        }).then(function (res) { return res.ok ? entry : entry; })
+            .catch(function () { return entry; });
+    }
+
+    function listCodes() {
+        var local = readLocalCodes();
+        return pingLocal().then(function (ok) {
+            if (!ok) return local;
+            return fetch("/api/codes", { headers: adminHeaders(), cache: "no-store" })
+                .then(function (res) { return res.ok ? res.json() : { codes: [] }; })
+                .then(function (data) {
+                    var remote = (data && data.codes) || [];
+                    var map = {};
+                    local.concat(remote).forEach(function (item) {
+                        if (!item || !item.id) return;
+                        var prev = map[item.id];
+                        if (!prev || (item.createdAt || 0) >= (prev.createdAt || 0)) map[item.id] = item;
+                    });
+                    var merged = Object.keys(map).map(function (id) { return map[id]; });
+                    merged.sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+                    writeLocalCodes(merged);
+                    return merged;
+                })
+                .catch(function () { return local; });
+        });
+    }
+
+    function findCode(raw) {
+        var needle = String(raw || "").trim().toUpperCase();
+        return listCodes().then(function (list) {
+            return list.find(function (item) { return String(item.code || "").toUpperCase() === needle; }) || null;
+        });
+    }
+
+    function markCodePaid(id) {
+        var list = readLocalCodes().map(function (item) {
+            if (item && item.id === id) item.paid = true;
+            return item;
+        });
+        writeLocalCodes(list);
+        return fetch("/api/codes/paid", {
+            method: "POST",
+            headers: adminHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ id: id })
+        }).then(function () { return true; }).catch(function () { return true; });
+    }
+
     function fileToCover(file) {
         return new Promise(function (resolve, reject) {
             if (!file) return resolve("");
@@ -219,6 +344,14 @@
         loginAdmin: loginAdmin,
         logoutAdmin: logoutAdmin,
         fileToCover: fileToCover,
-        toNumber: toNumber
+        toNumber: toNumber,
+        createAccessCode: createAccessCode,
+        listCodes: listCodes,
+        findCode: findCode,
+        markCodePaid: markCodePaid,
+        isCodeExpired: isCodeExpired,
+        formatExpiry: formatExpiry,
+        codeNotice: codeNotice,
+        codeWhatsApp: codeWhatsApp
     };
 })(window);

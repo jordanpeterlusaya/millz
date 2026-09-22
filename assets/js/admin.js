@@ -10,12 +10,19 @@
     var formOk = document.getElementById("formOk");
     var coverPreview = document.getElementById("coverPreview");
 
-    function showDash() {
+    function showDash(data) {
         loginView.hidden = true;
         dashView.hidden = false;
-        MILLZ.loadCatalog().then(function (data) {
+        if (data) {
             catalog = data;
             renderList();
+            renderNotices();
+            return;
+        }
+        MILLZ.loadCatalog().then(function (loaded) {
+            catalog = loaded;
+            renderList();
+            renderNotices();
         });
     }
 
@@ -24,24 +31,43 @@
         dashView.hidden = true;
     }
 
-    if (MILLZ.isAdmin()) showDash();
+    window.millzAdminReady = function (data) {
+        showDash(data);
+    };
+
+    if (window.MILLZ && MILLZ.isAdmin()) showDash();
     else showLogin();
 
-    loginForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (MILLZ.loginAdmin(document.getElementById("adminPass").value)) {
-            loginError.hidden = true;
-            showDash();
-        } else {
-            loginError.hidden = false;
-            loginError.textContent = "Password si sahihi.";
-        }
-    });
+    if (loginForm) {
+        loginForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            if (!window.MILLZ) return;
+            if (MILLZ.loginAdmin(document.getElementById("adminPass").value)) {
+                if (loginError) loginError.hidden = true;
+                showDash();
+            } else if (loginError) {
+                loginError.hidden = false;
+                loginError.textContent = "Password si sahihi. Tumia MILLZ005";
+            }
+        });
+    }
 
-    document.getElementById("logoutBtn").addEventListener("click", function () {
-        MILLZ.logoutAdmin();
-        showLogin();
-    });
+    var loginBtn = document.getElementById("loginBtn");
+    if (loginBtn) {
+        loginBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (loginForm && typeof loginForm.requestSubmit === "function") loginForm.requestSubmit();
+            else if (loginForm) loginForm.dispatchEvent(new Event("submit", { cancelable: true }));
+        });
+    }
+
+    var logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+            if (window.MILLZ) MILLZ.logoutAdmin();
+            showLogin();
+        });
+    }
 
     function allItems() {
         var list = (catalog.games || []).concat(catalog.apps || []);
@@ -208,4 +234,38 @@
             ? "Localhost iko. Save inaandika kwenye data/catalog.json — hakuna database."
             : "Browser mode. Endesha python3 admin-server.py kwenye folder hii ili Save iandike kwenye laptop.";
     });
+
+    function renderNotices() {
+        var host = document.getElementById("notifyList");
+        if (!host || !window.MILLZ) return;
+        MILLZ.listCodes().then(function (list) {
+            if (!list.length) {
+                host.innerHTML = '<p class="admin-lead">Hakuna kodi bado. Mteja akibonyeza Generate Code, ujumbe utatokea hapa.</p>';
+                return;
+            }
+            host.innerHTML = list.map(function (entry) {
+                var expired = MILLZ.isCodeExpired(entry);
+                var klass = "notify-item" + (entry.paid ? " paid" : "") + (expired ? " expired" : "");
+                var extra = expired ? "Ime-expire." : (entry.paid ? "Malipo yamethibitishwa." : "Subiri screenshot kwenye WhatsApp.");
+                var action = entry.paid || expired
+                    ? ""
+                    : '<button type="button" class="btn btn-outline" data-paid="' + MILLZ.esc(entry.id) + '">Thibitisha malipo</button>';
+                return '<article class="' + klass + '"><p>' + MILLZ.esc(MILLZ.codeNotice(entry)) + "</p>" +
+                    '<div class="meta">' + MILLZ.esc(extra) + "</div>" + action + "</article>";
+            }).join("");
+        });
+    }
+
+    var notifyHost = document.getElementById("notifyList");
+    if (notifyHost) {
+        notifyHost.addEventListener("click", function (e) {
+            var id = e.target.getAttribute("data-paid");
+            if (!id) return;
+            MILLZ.markCodePaid(id).then(renderNotices);
+        });
+    }
+
+    setInterval(function () {
+        if (dashView && !dashView.hidden) renderNotices();
+    }, 12000);
 })();

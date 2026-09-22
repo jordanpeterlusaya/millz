@@ -17,11 +17,11 @@
         <img src="/assets/img/logo-mark.png" alt="MILLZ GAMES">
         <h1>Admin</h1>
         <p>Weka jina, kundi, bei, link na cover. Chagua Paid au Free.</p>
-        <form id="loginForm">
+        <form id="loginForm" action="#" method="post" novalidate>
             <label for="adminPass">Password</label>
             <input id="adminPass" type="password" autocomplete="current-password" required>
             <p class="admin-error" id="loginError" hidden></p>
-            <button class="btn btn-primary" type="submit">Ingia</button>
+            <button class="btn btn-primary" type="submit" id="loginBtn">Ingia</button>
         </form>
         <p class="admin-lead" style="margin-top:18px;">Localhost: <code>python3 admin-server.py</code><br>kisha fungua <code>/admin.html</code><br>Code: <strong>MILLZ005</strong></p>
         <a href="/">← Rudi store</a>
@@ -42,7 +42,7 @@
             <h2 id="formTitle">Ongeza game</h2>
             <p class="admin-lead">Jaza jina, kundi, bei, platform (Android au Windows), link, na cover. Kwenye laptop, Save inaandika kwenye <code>data/catalog.json</code> bila database.</p>
             <p class="admin-ok" id="localStatus" hidden></p>
-            <form id="itemForm">
+            <form id="itemForm" novalidate>
                 <input type="hidden" id="itemId">
                 <div class="admin-row">
                     <div>
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 <label for="itemName">Jina la game</label>
-                <input id="itemName" type="text" placeholder="Grand Theft Auto VI" required>
+                <input id="itemName" type="text" placeholder="Grand Theft Auto V">
                 <div class="admin-row">
                     <div>
                         <label for="itemPaid">Kundi la malipo</label>
@@ -90,7 +90,7 @@
                 <label for="itemCoverFile">Picha ya jalada (Cover)</label>
                 <input id="itemCoverFile" type="file" accept="image/jpeg,image/png,image/webp">
                 <label for="itemCoverUrl">au cover URL</label>
-                <input id="itemCoverUrl" type="text" placeholder="/assets/img/games/gta-vi.jpg">
+                <input id="itemCoverUrl" type="text" placeholder="/assets/img/games/gta-v.jpg">
                 <img id="coverPreview" class="cover-preview" alt="" hidden>
                 <label class="admin-check"><input id="itemFeatured" type="checkbox"> Featured kwenye homepage</label>
                 <label class="admin-check"><input id="itemPublished" type="checkbox" checked> Published (ionekane kwenye store)</label>
@@ -103,6 +103,12 @@
         </section>
 
         <section class="admin-card">
+            <h2>Admin Notification Box</h2>
+            <p class="admin-lead">Kila mteja anapotengeneza kodi, ujumbe unaonekana hapa ili uhakikishe malipo kwenye WhatsApp <strong>0683179360</strong>.</p>
+            <div id="notifyList"></div>
+        </section>
+
+        <section class="admin-card">
             <h2>Games / apps zilizowekwa</h2>
             <div id="adminList" class="admin-list"></div>
         </section>
@@ -110,5 +116,40 @@
 </div>
 <script src="/assets/js/catalog.js"></script>
 <script src="/assets/js/admin.js"></script>
-</body>
-</html>
+<script>
+(function () {
+    function fail(msg) {
+        var err = document.getElementById("loginError");
+        if (!err) return;
+        err.hidden = false;
+        err.textContent = msg;
+    }
+    function loginNow() {
+        var pass = (document.getElementById("adminPass") || {}).value || "";
+        if (!window.MILLZ) {
+            fail("JavaScript haikupakia. Refresh ukurasa.");
+            return;
+        }
+        if (MILLZ.loginAdmin(pass)) {
+            var loginView = document.getElementById("loginView");
+            var dashView = document.getElementById("dashView");
+            if (loginView) loginView.hidden = true;
+            if (dashView) dashView.hidden = false;
+            MILLZ.loadCatalog().then(function (data) {
+                if (typeof window.millzAdminReady === "function") window.millzAdminReady(data);
+            });
+        } else {
+            fail("Password si sahihi. Tumia MILLZ005");
+        }
+    }
+    var form = document.getElementById("loginForm");
+    var btn = document.getElementById("loginBtn");
+    if (form) form.addEventListener("submit", function (e) { e.preventDefault(); loginNow(); });
+    if (btn) btn.addEventListener("click", function (e) { e.preventDefault(); loginNow(); });
+    var pass = document.getElementById("adminPass");
+    if (pass) pass.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); loginNow(); }
+    });
+})();
+</script>
+</body></html>

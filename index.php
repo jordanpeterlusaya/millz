@@ -84,8 +84,8 @@ if (empty($homeGames)) {
     }
 }
 $spotlight = $featuredGames[0] ?? $homeGames[0] ?? null;
-$spotName = $spotlight["name"] ?? "Football 2027";
-$spotCover = $spotlight ? millz_cover($spotlight) : "assets/img/games/football-2027.jpg";
+$spotName = $spotlight["name"] ?? "Grand Theft Auto V";
+$spotCover = $spotlight ? millz_cover($spotlight) : "assets/img/games/gta-v.jpg";
 $spotWide = $spotlight["wide"] ?? $spotCover;
 $spotTag = $spotlight["category_name"] ?? "Action";
 $spotPrice = millz_price($spotlight["price"] ?? null);
@@ -106,11 +106,11 @@ $current = "home";
 
 <section class="hero" id="home">
     <div class="hero-bg">
-        <div class="hero-slide active" style="background-image:url('<?= htmlspecialchars($spotWide) ?>');"></div>
-        <div class="hero-slide" style="background-image:url('assets/img/games/subway-wide.jpg');"></div>
-        <div class="hero-slide" style="background-image:url('assets/img/games/efootball-wide.jpg');"></div>
+        <div class="hero-slide active" style="background-image:url('assets/img/games/gta-v-wide.jpg');"></div>
         <div class="hero-slide" style="background-image:url('assets/img/games/fifa-wide.jpg');"></div>
         <div class="hero-slide" style="background-image:url('assets/img/games/pubg-wide.jpg');"></div>
+        <div class="hero-slide" style="background-image:url('assets/img/games/subway-wide.jpg');"></div>
+        <div class="hero-slide" style="background-image:url('assets/img/games/fc-27-wide.jpg');"></div>
     </div>
 
     <div class="hero-grid">
@@ -169,7 +169,7 @@ $current = "home";
             data-kind="game"
             data-wa="<?= htmlspecialchars($spotWa, ENT_QUOTES) ?>"
         >
-            <img src="<?= htmlspecialchars($spotWide) ?>" alt="<?= htmlspecialchars($spotName) ?>">
+            <img src="<?= htmlspecialchars($spotCover) ?>" alt="<?= htmlspecialchars($spotName) ?>">
             <div class="hero-feature-copy">
                 <small>Featured</small>
                 <h2><?= htmlspecialchars($spotName) ?></h2>
@@ -230,7 +230,7 @@ $current = "home";
             <?php endforeach; ?>
             <button class="rotator-nav next" type="button" data-rotator-nav="next" aria-label="Next">&rsaquo;</button>
         </div>
-        <div class="rotator-caption" id="rotatorCaption">Grand Theft Auto VI</div>
+        <div class="rotator-caption" id="rotatorCaption">Grand Theft Auto V</div>
     </div>
 </section>
 
