@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MILLZ GAMES</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>WELCOME TO MILLZ GAMES 🎮</h1>
+    <p>Your gaming world starts here 🎮</p>
+
+    <button>EXPLORE GAMES</button>
+
+    <div class="game-card">
+        <img src="images/subwaysurfers.jpg" alt="Subway Surfers">
+        <h2>Subway Surfers</h2>
+        <p>Run, jump and escape the inspectors!</p>
+        <p style="color: #00ff88; font-weight: bold; margin-top: 10px;">FOR FREE 🔥</p>
+        <a href="#">DOWNLOAD NOW 🎮</a>
+    </div>
+
+</body>
+</html>
