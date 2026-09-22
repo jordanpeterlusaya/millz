@@ -751,7 +751,7 @@ section {
     font-family: var(--sans);
     font-size: 15px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     letter-spacing: -.01em;
 }
 
@@ -763,9 +763,25 @@ section {
 
 .price {
     color: var(--lime);
-    font-size: 14px;
-    font-weight: 600;
-    margin: 11px 0;
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 800;
+    margin: 6px 0 12px;
+    letter-spacing: -.02em;
+}
+
+.price-tag {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 2;
+    background: rgba(4, 20, 12, .9);
+    color: var(--lime);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    border: 1px solid rgba(0, 255, 136, .35);
 }
 
 .product-btn,

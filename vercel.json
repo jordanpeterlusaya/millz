@@ -3,7 +3,8 @@
   "trailingSlash": false,
   "redirects": [
     { "source": "/index.php", "destination": "/", "permanent": false },
-    { "source": "/preview.html", "destination": "/", "permanent": false }
+    { "source": "/preview.html", "destination": "/", "permanent": false },
+    { "source": "/admin", "destination": "/admin.html", "permanent": false }
   ],
   "headers": [
     {

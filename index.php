@@ -84,8 +84,8 @@ if (empty($homeGames)) {
     }
 }
 $spotlight = $featuredGames[0] ?? $homeGames[0] ?? null;
-$spotName = $spotlight["name"] ?? "Grand Theft Auto V";
-$spotCover = $spotlight ? millz_cover($spotlight) : "assets/img/games/gta-v.jpg";
+$spotName = $spotlight["name"] ?? "Grand Theft Auto VI";
+$spotCover = $spotlight ? millz_cover($spotlight) : "assets/img/games/gta-vi.jpg";
 $spotWide = $spotlight["wide"] ?? $spotCover;
 $spotTag = $spotlight["category_name"] ?? "Action";
 $spotPrice = millz_price($spotlight["price"] ?? null);
@@ -230,7 +230,7 @@ $current = "home";
             <?php endforeach; ?>
             <button class="rotator-nav next" type="button" data-rotator-nav="next" aria-label="Next">&rsaquo;</button>
         </div>
-        <div class="rotator-caption" id="rotatorCaption">Grand Theft Auto V</div>
+        <div class="rotator-caption" id="rotatorCaption">Grand Theft Auto VI</div>
     </div>
 </section>
 
@@ -382,9 +382,9 @@ $current = "home";
         <div class="home-panel">
             <div class="section-kicker">Support</div>
             <h2>Contact</h2>
-            <p>WhatsApp 0627041240 · HaloPesa 0627041240</p>
+            <p>WhatsApp 0683179860 · HaloPesa 0627041240</p>
             <div class="contact-grid" style="grid-template-columns:1fr;margin-bottom:18px;">
-                <a class="contact-card" href="https://wa.me/255627041240" target="_blank" rel="noopener">
+                <a class="contact-card" href="https://wa.me/255683179860" target="_blank" rel="noopener">
                     <img src="assets/img/social/whatsapp.svg" alt="WhatsApp" style="width:28px;height:28px;margin:0 auto 8px;">
                     <h3>WhatsApp</h3>
                     <p>Buy, access codes and custom requests.</p>

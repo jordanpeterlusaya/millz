@@ -69,8 +69,8 @@ $current = "contact";
 
             <div class="info">
                 <strong>WhatsApp</strong>
-                <span>0627041240</span><br>
-                <a class="btn btn-primary" href="https://wa.me/255627041240" target="_blank" rel="noopener" style="margin-top:10px;">
+                <span>0683179860</span><br>
+                <a class="btn btn-primary" href="https://wa.me/255683179860" target="_blank" rel="noopener" style="margin-top:10px;">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
                 </a>
             </div>

@@ -3,7 +3,7 @@ if (!function_exists("millz_price")) {
     function millz_price($price)
     {
         if ($price === null || $price === "" || (float)$price <= 0) {
-            return "Price: Set by Admin";
+            return "Bei: WhatsApp";
         }
         return "TSh " . number_format((float)$price, 0);
     }
@@ -28,7 +28,7 @@ if (!function_exists("millz_buy_url")) {
         $priceText = millz_price($price);
         $label = $kind === "tip" ? "eFootball tips" : $kind;
         $msg = "Hujambo MILLZ GAMES\nNataka kununua {$label}: {$name}\nBei: {$priceText}\nTafadhali nipe maelezo ya malipo na access code.";
-        return "https://wa.me/255627041240?text=" . rawurlencode($msg);
+        return "https://wa.me/255683179860?text=" . rawurlencode($msg);
     }
 }
 
@@ -36,7 +36,7 @@ if (!function_exists("millz_showcase_games")) {
     function millz_showcase_games()
     {
         return [
-            ["name" => "Grand Theft Auto V", "image" => "assets/img/games/gta-v.jpg", "wide" => "assets/img/games/gta-v-wide.jpg", "tag" => "Action"],
+            ["name" => "Grand Theft Auto VI", "image" => "assets/img/games/gta-vi.jpg", "wide" => "assets/img/games/gta-vi-wide.jpg", "tag" => "Action"],
             ["name" => "Subway Surfers", "image" => "assets/img/games/subway.jpg", "wide" => "assets/img/games/subway-wide.jpg", "tag" => "Arcade"],
             ["name" => "eFootball", "image" => "assets/img/games/efootball.jpg", "wide" => "assets/img/games/efootball-wide.jpg", "tag" => "Sports"],
             ["name" => "GTA San Andreas", "image" => "assets/img/games/gta-sa.jpg", "wide" => "assets/img/games/gta-v-wide.jpg", "tag" => "Action"],
@@ -54,7 +54,7 @@ if (!function_exists("millz_socials")) {
         return [
             ["id" => "instagram", "label" => "Instagram", "handle" => "@young_millz05", "url" => "https://www.instagram.com/young_millz05", "icon" => "assets/img/social/instagram.svg", "copy" => "Gameplay, store drops and behind the scenes."],
             ["id" => "tiktok", "label" => "TikTok", "handle" => "@young_millz05", "url" => "https://www.tiktok.com/@young_millz05", "icon" => "assets/img/social/tiktok.svg", "copy" => "Short clips and the latest titles."],
-            ["id" => "whatsapp", "label" => "WhatsApp", "handle" => "0627041240", "url" => "https://wa.me/255627041240", "icon" => "assets/img/social/whatsapp.svg", "copy" => "Buy games, tips and request a title."],
+            ["id" => "whatsapp", "label" => "WhatsApp", "handle" => "0683179860", "url" => "https://wa.me/255683179860", "icon" => "assets/img/social/whatsapp.svg", "copy" => "Buy games, tips and request a title."],
             ["id" => "youtube", "label" => "YouTube", "handle" => "@millzjasper", "url" => "https://youtube.com/@millzjasper", "icon" => "assets/img/social/youtube.svg", "copy" => "Tutorials, gameplay and MILLZ JASPER uploads."],
         ];
     }

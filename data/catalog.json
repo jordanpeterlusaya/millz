@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "games": [
+    {
+      "id": "gta-vi",
+      "name": "Grand Theft Auto VI",
+      "kind": "game",
+      "tag": "Action",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/gta-vi.jpg",
+      "wide": "/assets/img/games/gta-vi-wide.jpg",
+      "link": "",
+      "featured": true,
+      "published": true
+    },
+    {
+      "id": "subway",
+      "name": "Subway Surfers",
+      "kind": "game",
+      "tag": "Arcade",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/subway.jpg",
+      "wide": "/assets/img/games/subway-wide.jpg",
+      "link": "",
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "efootball",
+      "name": "eFootball",
+      "kind": "game",
+      "tag": "Sports",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/efootball.jpg",
+      "wide": "/assets/img/games/efootball-wide.jpg",
+      "link": "",
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "gta-sa",
+      "name": "GTA San Andreas",
+      "kind": "game",
+      "tag": "Action",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/gta-sa.jpg",
+      "wide": "/assets/img/games/gta-v-wide.jpg",
+      "link": "",
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "fc24",
+      "name": "EA Sports FC 24",
+      "kind": "game",
+      "tag": "Sports",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/fifa.jpg",
+      "wide": "/assets/img/games/fifa-wide.jpg",
+      "link": "",
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "cod",
+      "name": "Call of Duty",
+      "kind": "game",
+      "tag": "Shooter",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/cod.jpg",
+      "wide": "/assets/img/games/pubg-wide.jpg",
+      "link": "",
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "pubg",
+      "name": "PUBG Battlegrounds",
+      "kind": "game",
+      "tag": "Battle Royale",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/pubg.jpg",
+      "wide": "/assets/img/games/pubg-wide.jpg",
+      "link": "",
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "gta-vice",
+      "name": "GTA Vice City",
+      "kind": "game",
+      "tag": "Action",
+      "platform": "Android / Windows",
+      "price": null,
+      "cover": "/assets/img/games/gta-vice.jpg",
+      "wide": "/assets/img/games/gta-vi-wide.jpg",
+      "link": "",
+      "featured": false,
+      "published": true
+    }
+  ],
+  "apps": [],
+  "tips": {
+    "id": "efootball-tips",
+    "name": "eFootball Tips Pack",
+    "kind": "tip",
+    "price": null,
+    "cover": "/assets/img/games/efootball.jpg",
+    "wide": "/assets/img/games/efootball-wide.jpg",
+    "link": "",
+    "published": true
+  }
+}
