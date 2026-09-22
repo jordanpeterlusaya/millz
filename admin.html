@@ -23,6 +23,7 @@
             <p class="admin-error" id="loginError" hidden></p>
             <button class="btn btn-primary" type="submit">Ingia</button>
         </form>
+        <p class="admin-lead" style="margin-top:18px;">Localhost: <code>python3 admin-server.py</code><br>kisha fungua <code>/admin.html</code><br>Code: <strong>MILLZ005</strong></p>
         <a href="/">← Rudi store</a>
     </div>
 </div>
@@ -39,7 +40,8 @@
     <main class="admin-wrap">
         <section class="admin-card">
             <h2 id="formTitle">Ongeza game</h2>
-            <p class="admin-lead">Jaza jina, kundi, bei, platform (Android au Windows), link, na cover.</p>
+            <p class="admin-lead">Jaza jina, kundi, bei, platform (Android au Windows), link, na cover. Kwenye laptop, Save inaandika kwenye <code>data/catalog.json</code> bila database.</p>
+            <p class="admin-ok" id="localStatus" hidden></p>
             <form id="itemForm">
                 <input type="hidden" id="itemId">
                 <div class="admin-row">

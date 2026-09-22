@@ -79,9 +79,11 @@
         if (editId) fillForm(findItem(editId));
         if (delId && confirm("Futa hii game?")) {
             removeItem(delId);
-            persist();
-            renderList();
-            resetForm();
+            persist().then(function (info) {
+                renderList();
+                resetForm();
+                showSaved("Game", info);
+            });
         }
     });
 
@@ -136,9 +138,15 @@
         var file = this.files && this.files[0];
         if (!file) return;
         MILLZ.fileToCover(file).then(function (data) {
-            editingCover = data;
             coverPreview.src = data;
             coverPreview.hidden = false;
+            editingCover = data;
+            return MILLZ.uploadCover(data, file.name);
+        }).then(function (url) {
+            if (url) {
+                editingCover = url;
+                document.getElementById("itemCoverUrl").value = url;
+            }
         });
     });
 
@@ -171,15 +179,33 @@
             }
             catalog.games.unshift(item);
         }
-        persist();
-        renderList();
-        var savedName = item.name;
-        resetForm();
-        formOk.hidden = false;
-        formOk.textContent = savedName + " imehifadhiwa. Bei itaonekana juu ya cover kwenye store.";
+        persist().then(function (info) {
+            renderList();
+            var savedName = item.name;
+            resetForm();
+            showSaved(savedName, info);
+        });
     });
 
     function persist() {
-        MILLZ.saveCatalog(catalog);
+        return MILLZ.saveCatalog(catalog);
     }
+
+    function showSaved(name, info) {
+        formOk.hidden = false;
+        if (info && info.disk) {
+            formOk.textContent = name + " imehifadhiwa kwenye laptop (data/catalog.json). Itaonekana kwenye store.";
+        } else {
+            formOk.textContent = name + " imehifadhiwa kwenye browser hii. Endesha python3 admin-server.py ili iandikwe kwenye faili.";
+        }
+    }
+
+    MILLZ.pingLocal().then(function (local) {
+        var status = document.getElementById("localStatus");
+        if (!status) return;
+        status.hidden = false;
+        status.textContent = local
+            ? "Localhost iko. Save inaandika kwenye data/catalog.json — hakuna database."
+            : "Browser mode. Endesha python3 admin-server.py kwenye folder hii ili Save iandike kwenye laptop.";
+    });
 })();

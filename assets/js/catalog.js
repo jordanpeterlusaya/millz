@@ -88,24 +88,63 @@
         return { version: 1, games: [], apps: [], tips: null };
     }
 
+    function pingLocal() {
+        return fetch("/api/status", { cache: "no-store" })
+            .then(function (res) { return res.ok ? res.json() : { local: false }; })
+            .then(function (data) { return !!(data && data.local); })
+            .catch(function () { return false; });
+    }
+
+    function adminHeaders(extra) {
+        var headers = { "X-Admin-Key": ADMIN_PASSWORD };
+        if (extra) {
+            Object.keys(extra).forEach(function (key) { headers[key] = extra[key]; });
+        }
+        return headers;
+    }
+
     function loadCatalog() {
-        return fetch(CATALOG_URL, { cache: "no-store" })
-            .then(function (res) { return res.ok ? res.json() : emptyCatalog(); })
-            .catch(function () { return emptyCatalog(); })
-            .then(function (seed) {
-                var local = null;
-                try {
-                    local = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-                } catch (e) {
-                    local = null;
-                }
-                return mergeCatalog(seed, local);
-            });
+        return pingLocal().then(function (local) {
+            return fetch(CATALOG_URL, { cache: "no-store" })
+                .then(function (res) { return res.ok ? res.json() : emptyCatalog(); })
+                .catch(function () { return emptyCatalog(); })
+                .then(function (seed) {
+                    if (local) return seed;
+                    var stored = null;
+                    try {
+                        stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+                    } catch (e) {
+                        stored = null;
+                    }
+                    return mergeCatalog(seed, stored);
+                });
+        });
     }
 
     function saveCatalog(data) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        return data;
+        return fetch("/api/catalog", {
+            method: "POST",
+            headers: adminHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify(data)
+        }).then(function (res) {
+            if (!res.ok) throw new Error("disk");
+            return res.json();
+        }).then(function (info) {
+            return { disk: !!(info && info.disk), data: data };
+        }).catch(function () {
+            return { disk: false, data: data };
+        });
+    }
+
+    function uploadCover(dataUrl, name) {
+        return fetch("/api/cover", {
+            method: "POST",
+            headers: adminHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ name: name || "cover.jpg", data: dataUrl })
+        }).then(function (res) { return res.ok ? res.json() : null; })
+            .then(function (info) { return info && info.url ? info.url : ""; })
+            .catch(function () { return ""; });
     }
 
     function uid(prefix) {
@@ -173,6 +212,8 @@
         publishedItems: publishedItems,
         loadCatalog: loadCatalog,
         saveCatalog: saveCatalog,
+        uploadCover: uploadCover,
+        pingLocal: pingLocal,
         uid: uid,
         isAdmin: isAdmin,
         loginAdmin: loginAdmin,
