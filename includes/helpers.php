@@ -28,7 +28,7 @@ if (!function_exists("millz_buy_url")) {
         $priceText = millz_price($price);
         $label = $kind === "tip" ? "eFootball tips" : $kind;
         $msg = "Hujambo MILLZ GAMES\nNataka kununua {$label}: {$name}\nBei: {$priceText}\nTafadhali nipe maelezo ya malipo na access code.";
-        return "https://wa.me/255683179860?text=" . rawurlencode($msg);
+        return "https://wa.me/255683179360?text=" . rawurlencode($msg);
     }
 }
 
@@ -54,7 +54,7 @@ if (!function_exists("millz_socials")) {
         return [
             ["id" => "instagram", "label" => "Instagram", "handle" => "@young_millz05", "url" => "https://www.instagram.com/young_millz05", "icon" => "assets/img/social/instagram.svg", "copy" => "Gameplay, store drops and behind the scenes."],
             ["id" => "tiktok", "label" => "TikTok", "handle" => "@young_millz05", "url" => "https://www.tiktok.com/@young_millz05", "icon" => "assets/img/social/tiktok.svg", "copy" => "Short clips and the latest titles."],
-            ["id" => "whatsapp", "label" => "WhatsApp", "handle" => "0683179860", "url" => "https://wa.me/255683179860", "icon" => "assets/img/social/whatsapp.svg", "copy" => "Buy games, tips and request a title."],
+            ["id" => "whatsapp", "label" => "WhatsApp", "handle" => "+255 683 179 360", "url" => "https://wa.me/255683179360", "icon" => "assets/img/social/whatsapp.svg", "copy" => "Buy games, tips and request a title."],
             ["id" => "youtube", "label" => "YouTube", "handle" => "@millzjasper", "url" => "https://youtube.com/@millzjasper", "icon" => "assets/img/social/youtube.svg", "copy" => "Tutorials, gameplay and MILLZ JASPER uploads."],
         ];
     }

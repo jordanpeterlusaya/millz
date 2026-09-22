@@ -382,9 +382,9 @@ $current = "home";
         <div class="home-panel">
             <div class="section-kicker">Support</div>
             <h2>Contact</h2>
-            <p>WhatsApp 0683179860 · HaloPesa 0627041240</p>
+            <p>WhatsApp +255 683 179 360 · HaloPesa 0627041240</p>
             <div class="contact-grid" style="grid-template-columns:1fr;margin-bottom:18px;">
-                <a class="contact-card" href="https://wa.me/255683179860" target="_blank" rel="noopener">
+                <a class="contact-card" href="https://wa.me/255683179360" target="_blank" rel="noopener">
                     <img src="assets/img/social/whatsapp.svg" alt="WhatsApp" style="width:28px;height:28px;margin:0 auto 8px;">
                     <h3>WhatsApp</h3>
                     <p>Buy, access codes and custom requests.</p>

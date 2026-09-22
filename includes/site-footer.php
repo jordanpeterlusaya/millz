@@ -33,7 +33,7 @@ $socials = millz_socials();
                 <li><a href="contact.php">Contact</a></li>
                 <li><a href="access.php">Access Code</a></li>
                 <li><a href="index.php#request">Request a Game</a></li>
-                <li><a href="https://wa.me/255683179860" target="_blank" rel="noopener">WhatsApp 0683179860</a></li>
+                <li><a href="https://wa.me/255683179360" target="_blank" rel="noopener">WhatsApp +255 683 179 360</a></li>
             </ul>
         </div>
 
@@ -62,12 +62,12 @@ $socials = millz_socials();
         <div class="price" id="buyPrice" style="text-align:center;">Bei: WhatsApp</div>
         <div class="buy-steps">
             1. Lipa HaloPesa <strong>0627041240</strong><br>
-            2. Tuma screenshot kwenye WhatsApp <strong>0683179860</strong><br>
+            2. Tuma screenshot kwenye WhatsApp <strong>+255 683 179 360</strong><br>
             3. Pokea access code kutoka admin<br>
             4. Unlock download kwenye Access
         </div>
         <div class="buy-actions">
-            <a id="buyWhatsApp" class="btn btn-primary" href="https://wa.me/255683179860" target="_blank" rel="noopener">
+            <a id="buyWhatsApp" class="btn btn-primary" href="https://wa.me/255683179360" target="_blank" rel="noopener">
                 <img src="assets/img/social/whatsapp.svg" alt="" style="width:18px;height:18px;"> Continue on WhatsApp
             </a>
             <a href="access.php" class="btn btn-outline">I already paid — get access</a>

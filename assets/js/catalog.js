@@ -3,8 +3,8 @@
     var ADMIN_KEY = "millz.admin.ok";
     var CATALOG_URL = "/data/catalog.json";
 
-    var MILLZ_WA = "255683179860";
-    var MILLZ_WA_DISPLAY = "0683179860";
+    var MILLZ_WA = "255683179360";
+    var MILLZ_WA_DISPLAY = "+255 683 179 360";
     var MILLZ_HALOPESA = "0627041240";
     var ADMIN_PASSWORD = "MILLZ005";
 
